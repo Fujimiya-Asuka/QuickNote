@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditActivity"
+    android:padding="10dp">
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/note_title_edit"
+        android:hint="标题"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/note_data_edit"
+        android:hint="内容"
+        android:layout_below="@id/note_title_edit"/>
+
+    <Button
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/writeDone_btn"
+        android:text="记录"
+        android:background="@drawable/btn_background"
+        android:textColor="#ffffff"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="320dp"/>
+
+
+</RelativeLayout>
