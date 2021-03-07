@@ -1,15 +1,26 @@
 package com.example.quicknote;
 
 public class Note {
-
-    private String title,data;
+    private long id;//主键
+    private String title;//标题
+    private String data;//内容
+//    private string time;//时间
 
     public Note() {
     }
 
-    public Note(String title, String data) {
+    public Note(String title, String data,long id) {
         this.title = title;
         this.data = data;
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitle() {

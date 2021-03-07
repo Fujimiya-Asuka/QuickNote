@@ -1,34 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditActivity"
-    android:padding="10dp">
+    android:padding="10dp"
+    tools:context=".EditActivity">
 
 
     <EditText
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
         android:id="@+id/note_title_edit"
-        android:hint="标题"/>
-
-    <EditText
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:hint="标题"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
         android:id="@+id/note_data_edit"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
         android:hint="内容"
-        android:layout_below="@id/note_title_edit"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/note_title_edit" />
 
     <Button
+        android:id="@+id/writeDone_btn"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:id="@+id/writeDone_btn"
-        android:text="记录"
         android:background="@drawable/btn_background"
+        android:text="记录"
         android:textColor="#ffffff"
-        android:layout_marginTop="220dp"
-        android:layout_marginLeft="320dp"/>
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/guideline5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="317dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="580dp" />
 
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

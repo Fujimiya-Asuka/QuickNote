@@ -34,22 +34,13 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.note_recycler_view);
         FloatingActionButton addBtn = findViewById(R.id.add_btn_main);
 
-        NoteDatabaseHelper dbHelper = new NoteDatabaseHelper(this, "textNote.db", null, 1);
-
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        List<Note> NoteList = new ArrayList<>();
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM NOTE ORDER BY ID DESC",null);//将查询到的数据库信息以ID列表倒序排列
-        while (cursor.moveToNext()){
-            String title = cursor.getString(cursor.getColumnIndex("title"));
-            String data = cursor.getString(cursor.getColumnIndex("data"));
-            Note note = new Note(title,data);
-            NoteList.add(note);
-        }
-        cursor.close();
-        NoteAdapter adapter = new NoteAdapter(NoteList);
+
+        NoteCRUD noteCRUD = new NoteCRUD(this);
+        List<Note> noteList = noteCRUD.getAllNotes();
+        NoteAdapter adapter = new NoteAdapter(noteList);
         recyclerView.setAdapter(adapter);
 
         //添加笔记按钮 跳转到编辑界面
