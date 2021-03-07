@@ -30,7 +30,7 @@ public class NoteAdapter extends RecyclerView.Adapter <NoteAdapter.ViewHolder>{
                 int position = holder.getAdapterPosition();
                 Note note = mNoteList.get(position);
                 long id = note.getId();
-                Intent intent = new Intent(parent.getContext(),EditActivity.class);
+                Intent intent = new Intent(parent.getContext(),NoteView.class);
                 intent.putExtra("Note_id",id); //向下一个活动传递noteID
                 parent.getContext().startActivity(intent);
             }
