@@ -15,8 +15,8 @@ import android.widget.Toast;
 public class EditActivity extends AppCompatActivity {
 
     private Button writeDone_btn;
-
     private EditText note_title_edit,note_data_edit;
+    private long note_id=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,34 +28,43 @@ public class EditActivity extends AppCompatActivity {
         note_data_edit = findViewById(R.id.note_data_edit);
 
         Intent intent = getIntent();
-        long note_id = intent.getLongExtra("Note_id",-1);
+
+
+        note_id = intent.getLongExtra("Note_id",-1);
         if (note_id!=-1){
-            NoteCRUD noteCRUD = new NoteCRUD(EditActivity.this);
-            Cursor cursor = noteCRUD.getNote(note_id);
+            SQLiteDatabase db = new NoteDatabaseHelper(EditActivity.this).getWritableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM NOTE WHERE id=? ", new String[]{"" + note_id});
             while (cursor.moveToNext()){
                 String title = cursor.getString(cursor.getColumnIndex("title"));
+                String data = cursor.getString(cursor.getColumnIndex("data"));
                 note_title_edit.setText(title);
+                note_data_edit.setText(data);
             }
-
+            cursor.close();
+            db.close();
         }
 
 
-
+        //将数据写入数据库
         writeDone_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-//                SQLiteDatabase db = dbHelper.getReadableDatabase();
-//                ContentValues values = new ContentValues();
-//                values.put("title",note_title_edit.getText().toString());
-//                values.put("data",note_data_edit.getText().toString());
-//                db.insert("NOTE",null,values);
-//                values.clear();
-                NoteCRUD noteCRUD = new NoteCRUD(EditActivity.this);
-                noteCRUD.addNote(note_title_edit.getText().toString(), note_data_edit.getText().toString());
                 Intent intent = new Intent(EditActivity.this,MainActivity.class);
-                startActivity(intent);
-                finish();
+                NoteCRUD noteCRUD = new NoteCRUD(EditActivity.this);
+                String title = note_title_edit.getText().toString();
+                String data = note_data_edit.getText().toString();
+                if ("".equals(title) || "".equals(data)){
+                    Toast.makeText(EditActivity.this,"标题或内容不能为空",Toast.LENGTH_SHORT).show();
+                }else {
+                    if(note_id>0){
+                        noteCRUD.upDataNote(note_id,title,data);
+                    }else {
+                        noteCRUD.addNote(title,data);
+                    }
+                    startActivity(intent);
+                    finish();
+                }
+
             }
         });
 

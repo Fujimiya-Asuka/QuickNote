@@ -37,16 +37,21 @@ public class NoteCRUD {
     //删除笔记
 
     //修改笔记
-    public void upDataNote(){
-
-    }
-
-    //获取单个笔记
-    public Cursor getNote(long note_id){
+    public void upDataNote(long note_id,String title,String data){
         db = noteDatabaseHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM NOTE WHERE id=? ", new String[]{"" + note_id});
-        return cursor;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("title",title);
+        contentValues.put("data",data);
+        db.update(table,contentValues,"id=?",new String[]{""+note_id});
+        db.close();
     }
+
+//    //获取单个笔记
+//    public Cursor getNote(long note_id){
+//        db = noteDatabaseHelper.getWritableDatabase();
+//        Cursor cursor = db.rawQuery("SELECT * FROM NOTE WHERE id=? ", new String[]{"" + note_id});
+//        return cursor;
+//    }
 
     //获取所有的笔记
     public List<Note> getAllNotes(){

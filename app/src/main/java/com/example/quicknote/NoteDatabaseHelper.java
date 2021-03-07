@@ -28,7 +28,6 @@ public class NoteDatabaseHelper extends SQLiteOpenHelper {
                 "title text," +
                 "data text )";
         sqLiteDatabase.execSQL(CRATE_NOTE);
-        Toast.makeText(mContext,"创建成功",Toast.LENGTH_SHORT).show();
     }
 
     @Override
