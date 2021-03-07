@@ -36,6 +36,11 @@ public class NoteCRUD {
 
     //删除笔记
 
+    //修改笔记
+    public void upDataNote(){
+
+    }
+
     //获取单个笔记
     public Cursor getNote(long note_id){
         db = noteDatabaseHelper.getWritableDatabase();
