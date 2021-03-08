@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp">
         <EditText
-            android:id="@+id/account_edit"
+            android:id="@+id/account_edit123"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:hint="账号"
@@ -26,7 +26,7 @@
         android:layout_below="@id/TI1">
 
         <EditText
-            android:id="@+id/password_edit"
+            android:id="@+id/password_edit123"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:hint="密码"
@@ -47,7 +47,7 @@
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:id="@+id/login_btn"
+        android:id="@+id/login_btn123"
         android:layout_width="140dp"
         android:layout_height="60dp"
         android:layout_below="@id/TI2"

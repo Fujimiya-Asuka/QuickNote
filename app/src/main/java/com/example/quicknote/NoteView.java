@@ -57,7 +57,7 @@ public class NoteView extends AppCompatActivity {
         if(actionBar!=null){
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        collapsingToolbar.setTitle(oldTitle);
+//        collapsingToolbar.setTitle(oldTitle);
         editText.setText(oldData);
 
         //删除笔记

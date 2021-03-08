@@ -31,12 +31,11 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }else {
             setContentView(R.layout.activity_login);
-            Button login_btn = findViewById(R.id.login_btn);
+            Button login_btn = findViewById(R.id.login_btn123);
             Button logon_btn = findViewById(R.id.test_btn);
-            account_Edit = findViewById(R.id.account_edit);
-            password_Edit = findViewById(R.id.password_edit);
+            account_Edit = findViewById(R.id.account_edit123);
+            password_Edit = findViewById(R.id.password_edit123);
             account_dbHelper = new AccountDatabaseHelper(this,"Account.db",null,1);
-
 
             login_btn.setOnClickListener(new View.OnClickListener() {
                 @Override

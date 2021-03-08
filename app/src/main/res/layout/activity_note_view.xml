@@ -19,7 +19,8 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            >
 
             <ImageView
                 android:id="@+id/app_bar_image_note_view"
@@ -31,10 +32,10 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar_note_view"
-                android:layout_height="?attr/actionBarSize"
                 android:layout_width="match_parent"
-                app:layout_collapseMode="pin">
-
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:title="123123123">
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -48,11 +49,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="35dp"
                 android:layout_marginLeft="15dp"
+                android:layout_marginTop="35dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginBottom="15dp"
                 app:cardCornerRadius="5dp">
@@ -62,7 +64,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:text="exampleexampleexampleexampleexampleexampleexample"/>
+                    android:text="exampleexampleexampleexampleexampleexampleexample" />
 
             </androidx.cardview.widget.CardView>
         </LinearLayout>
