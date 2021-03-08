@@ -73,75 +73,58 @@ public class SignInFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_sign_in, container, false);
     }
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         final AccountDatabaseHelper account_dbHelper;
         final FragmentActivity fragmentActivity = requireActivity();
-        SharedPreferences preferences =fragmentActivity.getSharedPreferences("config", Context.MODE_PRIVATE);
-        int isLogin = preferences.getInt("isLogin",0);//提取是否已登录信息
-        if(isLogin==1){
-            Intent intent = new Intent(fragmentActivity,MainActivity.class);
-            startActivity(intent);
-            fragmentActivity.finish();
-        }else {
-            Button login_btn = fragmentActivity.findViewById(R.id.sign_in_btn);
-            //登录页面的账户输入框
-            final EditText account_Edit = fragmentActivity.findViewById(R.id.account_edit_sign_in);
-            //登录页面的密码输入框
-            final EditText password_Edit = fragmentActivity.findViewById(R.id.password_edit_sign_in);
 
-            account_dbHelper = new AccountDatabaseHelper(fragmentActivity,"Account.db",null,1);
+        Button login_btn = fragmentActivity.findViewById(R.id.sign_in_btn);
+        //登录页面的账户输入框
+        final EditText account_Edit = fragmentActivity.findViewById(R.id.account_edit_sign_in);
+        //登录页面的密码输入框
+        final EditText password_Edit = fragmentActivity.findViewById(R.id.password_edit_sign_in);
 
-            login_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    SQLiteDatabase db = account_dbHelper.getWritableDatabase();
-                    String search = account_Edit.getText().toString();
-                    String target = password_Edit.getText().toString();
+        account_dbHelper = new AccountDatabaseHelper(fragmentActivity, "Account.db", null, 1);
 
+        login_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SQLiteDatabase db = account_dbHelper.getWritableDatabase();
+                String search = account_Edit.getText().toString();
+                String target = password_Edit.getText().toString();
 //                判断输入框是否为空
-                    if("".equals(search) || "".equals(target)){
-                        Toast.makeText(fragmentActivity,"账号密码不能为空",Toast.LENGTH_SHORT).show();
-                    }else {
-                        @SuppressLint("Recycle") Cursor cursor = db.rawQuery("SELECT password FROM account WHERE account=?",new String[]{search});
-                        cursor.getCount();
+                if ("".equals(search) || "".equals(target)) {
+                    Toast.makeText(fragmentActivity, "账号密码不能为空", Toast.LENGTH_SHORT).show();
+                } else {
+                    @SuppressLint("Recycle") Cursor cursor = db.rawQuery("SELECT password FROM account WHERE account=?", new String[]{search});
+                    cursor.getCount();
 
-                        if(cursor.getCount()==0){
-                            Toast.makeText(fragmentActivity,"账号不存在",Toast.LENGTH_SHORT).show();
-                        }else{
-                            cursor.moveToNext();
-                            String account = cursor.getString(cursor.getColumnIndex("password"));
-                            if (account.equals(target)){
-                                Toast.makeText(fragmentActivity,"登陆成功",Toast.LENGTH_SHORT).show();
-                                //利用SharedPreference将已经登录信息存储到config文件中
-                                SharedPreferences.Editor editor = fragmentActivity.getSharedPreferences("config",Context.MODE_PRIVATE).edit();
-                                editor.putInt("isLogin",1);
-                                editor.apply();
+                    if (cursor.getCount() == 0) {
+                        Toast.makeText(fragmentActivity, "账号不存在", Toast.LENGTH_SHORT).show();
+                    } else {
+                        cursor.moveToNext();
+                        String account = cursor.getString(cursor.getColumnIndex("password"));
+                        if (account.equals(target)) {
+                            Toast.makeText(fragmentActivity, "登陆成功", Toast.LENGTH_SHORT).show();
+                            //利用SharedPreference将已经登录信息存储到config文件中
+                            SharedPreferences.Editor editor = fragmentActivity.getSharedPreferences("config", Context.MODE_PRIVATE).edit();
+                            editor.putInt("isLogin", 1);
+                            editor.apply();
 
-                                Intent intent = new Intent(fragmentActivity,MainActivity.class);
-                                startActivity(intent);
-                                fragmentActivity.finish();
-                            }else {
-                                Toast.makeText(fragmentActivity,"密码错误",Toast.LENGTH_SHORT ).show();
-                            }
-                            db.close();
+                            Intent intent = new Intent(fragmentActivity, MainActivity.class);
+                            startActivity(intent);
+                            fragmentActivity.finish();
+                        } else {
+                            Toast.makeText(fragmentActivity, "密码错误", Toast.LENGTH_SHORT).show();
                         }
-
+                        db.close();
                     }
+
                 }
+            }
+        });
 
-            });
-
-
-        }
-//        final EditText editText = requireActivity().findViewById(R.id.account_edit123);
-//        Button button = requireActivity().findViewById(R.id.login_btn123);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(requireActivity(),editText.getText().toString(),Toast.LENGTH_SHORT).show();
-//            }
-//        });
     }
 }
