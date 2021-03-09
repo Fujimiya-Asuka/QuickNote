@@ -1,4 +1,4 @@
-package com.example.quicknote;
+package com.asuka.quicknote.fragment;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
@@ -15,6 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.asuka.quicknote.R;
+import com.asuka.quicknote.db.AccountDatabaseHelper;
 
 /**
  * A simple {@link Fragment} subclass.

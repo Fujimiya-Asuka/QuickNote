@@ -1,4 +1,4 @@
-package com.example.quicknote;
+package com.asuka.quicknote.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,6 +18,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.asuka.quicknote.activity.MainActivity;
+import com.asuka.quicknote.R;
+import com.asuka.quicknote.db.AccountDatabaseHelper;
+import com.asuka.quicknote.db.NoteCRUD;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -100,7 +105,6 @@ public class SignInFragment extends Fragment {
                 } else {
                     @SuppressLint("Recycle") Cursor cursor = db.rawQuery("SELECT password FROM account WHERE account=?", new String[]{search});
                     cursor.getCount();
-
                     if (cursor.getCount() == 0) {
                         Toast.makeText(fragmentActivity, "账号不存在", Toast.LENGTH_SHORT).show();
                     } else {
@@ -112,6 +116,15 @@ public class SignInFragment extends Fragment {
                             SharedPreferences.Editor editor = fragmentActivity.getSharedPreferences("config", Context.MODE_PRIVATE).edit();
                             editor.putInt("isLogin", 1);
                             editor.apply();
+
+                            //测试代码：
+                            NoteCRUD noteCRUD = new NoteCRUD(fragmentActivity);
+                            final String title = "标题";
+                            final String data = "内容";
+                            for (int i = 1; i <= 100; i++) {
+                                noteCRUD.addNote(title+i,data+i);
+                            }
+                            //测试代码
 
                             Intent intent = new Intent(fragmentActivity, MainActivity.class);
                             startActivity(intent);

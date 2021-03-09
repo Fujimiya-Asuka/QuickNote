@@ -1,9 +1,8 @@
-package com.example.quicknote;
+package com.asuka.quicknote.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -28,6 +27,9 @@ public class NoteDatabaseHelper extends SQLiteOpenHelper {
                 "title text," +
                 "data text )";
         sqLiteDatabase.execSQL(CRATE_NOTE);
+
+
+
     }
 
     @Override

@@ -1,26 +1,23 @@
-package com.example.quicknote;
+package com.asuka.quicknote.activity;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.asuka.quicknote.R;
+import com.asuka.quicknote.myClass.Note;
+import com.asuka.quicknote.db.NoteCRUD;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Collection;
-
-public class NoteView extends AppCompatActivity {
+public class NoteViewActivity extends AppCompatActivity {
 
     private EditText editText;
     private FloatingActionButton remove_btn;
@@ -29,7 +26,7 @@ public class NoteView extends AppCompatActivity {
     private Note note;
     private String oldTitle;
     private String oldData;
-    private NoteCRUD noteCRUD = new NoteCRUD(NoteView.this);
+    private NoteCRUD noteCRUD = new NoteCRUD(NoteViewActivity.this);
 
 
     @Override
@@ -46,7 +43,7 @@ public class NoteView extends AppCompatActivity {
         //获取被点击的note对象
         note_id = intent.getLongExtra("Note_id",-1);
         if (note_id!=-1){
-            noteCRUD = new NoteCRUD(NoteView.this);
+            noteCRUD = new NoteCRUD(NoteViewActivity.this);
             note = noteCRUD.getNote(note_id);
             oldTitle = note.getTitle();
             oldData = note.getData();
@@ -78,7 +75,7 @@ public class NoteView extends AppCompatActivity {
             case android.R.id.home :
                 //如果数据不相同，就更新
                 if (!oldData.equals(editText.getText().toString())) {
-                    NoteCRUD noteCRUD = new NoteCRUD(NoteView.this);
+                    NoteCRUD noteCRUD = new NoteCRUD(NoteViewActivity.this);
                     noteCRUD.upDataNote(note_id,oldTitle,editText.getText().toString());
                 }
                 finish();

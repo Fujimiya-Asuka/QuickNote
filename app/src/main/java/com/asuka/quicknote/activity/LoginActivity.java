@@ -1,4 +1,4 @@
-package com.example.quicknote;
+package com.asuka.quicknote.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,6 +13,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.asuka.quicknote.R;
+import com.asuka.quicknote.db.AccountDatabaseHelper;
+
 public class LoginActivity extends AppCompatActivity {
 
 
@@ -26,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences preferences =getSharedPreferences("config",MODE_PRIVATE   );
         int isLogin = preferences.getInt("isLogin",0);//提取是否已登录信息
         if(isLogin==1){
-            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         }else {

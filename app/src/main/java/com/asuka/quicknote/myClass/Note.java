@@ -1,4 +1,4 @@
-package com.example.quicknote;
+package com.asuka.quicknote.myClass;
 
 public class Note {
     private long id;//主键

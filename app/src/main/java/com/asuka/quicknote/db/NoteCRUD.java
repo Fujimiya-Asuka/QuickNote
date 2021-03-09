@@ -1,10 +1,11 @@
-package com.example.quicknote;
+package com.asuka.quicknote.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.Toast;
+
+import com.asuka.quicknote.myClass.Note;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +26,31 @@ public class NoteCRUD {
         ContentValues contentValues = new ContentValues();
         contentValues.put("title",title);
         contentValues.put("data",data);
-        long noteID = db.insert(table, null, contentValues); //返回一个主键的值
-
+        long noteID = db.insert(table, null, contentValues); //insert()返回一个主键的值
         contentValues.clear();
         db.close();
         return noteID;
     }
 
-    //查找笔记
+    //查找笔记，模糊匹配
+    public List<Note> searchNotes(String s){
+        db = noteDatabaseHelper.getWritableDatabase();
+        List<Note> NoteList = new ArrayList<>();
+        final String s1 = "SELECT * FROM NOTE WHERE";
+        final String s2 = " title LIKE "+ "'%" + s + "%'";
+        final String s3 = " OR data LIKE "+ "'%" + s + "%'";
+        Cursor cursor = db.rawQuery(s1+s2+s3,null);//将查询到的数据库信息以ID列表倒序排列
+        while (cursor.moveToNext()){
+            String title = cursor.getString(cursor.getColumnIndex("title"));
+            String data = cursor.getString(cursor.getColumnIndex("data"));
+            long noteId = cursor.getInt(cursor.getColumnIndex("id"));
+            Note note = new Note(title,data,noteId);
+            NoteList.add(note);
+        }
+        cursor.close();
+        db.close();
+        return NoteList;
+    }
 
     //删除指定笔记
     public void removeNote(long note_id){
@@ -51,7 +69,7 @@ public class NoteCRUD {
         db.close();
     }
 
-    //获取单个笔记
+    //获取单个笔记，返回note对象
     public Note getNote(long note_id){
         db = noteDatabaseHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM NOTE WHERE id=? ", new String[]{"" + note_id});

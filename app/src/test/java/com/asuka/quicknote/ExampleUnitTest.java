@@ -1,4 +1,4 @@
-package com.example.quicknote;
+package com.asuka.quicknote;
 
 import org.junit.Test;
 

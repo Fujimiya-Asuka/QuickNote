@@ -1,8 +1,7 @@
-package com.example.quicknote;
+package com.asuka.quicknote.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,6 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.asuka.quicknote.R;
+import com.asuka.quicknote.db.NoteCRUD;
+import com.asuka.quicknote.db.NoteDatabaseHelper;
 
 public class EditActivity extends AppCompatActivity {
 
@@ -44,21 +47,23 @@ public class EditActivity extends AppCompatActivity {
             db.close();
         }
 
-
         //将数据写入数据库
         writeDone_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(EditActivity.this,MainActivity.class);
+                Intent intent = new Intent(EditActivity.this, MainActivity.class);
                 NoteCRUD noteCRUD = new NoteCRUD(EditActivity.this);
                 String title = note_title_edit.getText().toString();
                 String data = note_data_edit.getText().toString();
                 if ("".equals(title) || "".equals(data)){
                     Toast.makeText(EditActivity.this,"标题或内容不能为空",Toast.LENGTH_SHORT).show();
                 }else {
+                    //检查no_id是否存在
                     if(note_id>0){
+                        //执行更新操作
                         noteCRUD.upDataNote(note_id,title,data);
                     }else {
+                        //执行添加操作
                         noteCRUD.addNote(title,data);
                     }
                     startActivity(intent);
@@ -70,6 +75,7 @@ public class EditActivity extends AppCompatActivity {
 
     }
 
+    //重写返回按键
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(EditActivity.this,MainActivity.class);

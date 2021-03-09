@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.quicknote">
+    package="com.asuka.quicknote">
 
     <application
         android:allowBackup="true"
@@ -11,20 +11,27 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ViewPager2LAUNCHER">
+
+        <activity android:name="com.asuka.quicknote.activity.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NoteView" />
-        <activity android:name=".EditActivity" />
-        <activity android:name=".LoginActivity">
+
+        <activity android:name="com.asuka.quicknote.activity.NoteViewActivity" />
+
+        <activity android:name="com.asuka.quicknote.activity.EditActivity" />
+
+        <activity android:name="com.asuka.quicknote.activity.LoginActivity">
+        </activity>
+
+        <activity
+            android:name="com.asuka.quicknote.activity.MainActivity"
+            android:launchMode="singleTask" >
 
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:launchMode="singleTask" />
+
     </application>
 
 </manifest>
