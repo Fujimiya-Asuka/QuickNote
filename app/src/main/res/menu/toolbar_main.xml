@@ -8,8 +8,8 @@
         android:title="AAA"
         app:showAsAction="always" />
     <item
-        android:id="@+id/BBB"
-        android:title="BBB"
+        android:id="@+id/dropTable"
+        android:title="删除"
         app:showAsAction="always" />
 
 </menu>

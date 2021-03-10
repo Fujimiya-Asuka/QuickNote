@@ -67,7 +67,6 @@ public class EditActivity extends AppCompatActivity {
                         noteCRUD.addNote(title,data);
                     }
                     startActivity(intent);
-                    finish();
                 }
 
             }
@@ -80,6 +79,5 @@ public class EditActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent(EditActivity.this,MainActivity.class);
         startActivity(intent);
-        finish();
     }
 }

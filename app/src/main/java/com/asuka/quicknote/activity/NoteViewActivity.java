@@ -73,14 +73,26 @@ public class NoteViewActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home :
-                //如果数据不相同，就更新
-                if (!oldData.equals(editText.getText().toString())) {
-                    NoteCRUD noteCRUD = new NoteCRUD(NoteViewActivity.this);
-                    noteCRUD.upDataNote(note_id,oldTitle,editText.getText().toString());
-                }
+                saveNewData();
                 finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //重写返回方法
+    @Override
+    public void onBackPressed() {
+        saveNewData();
+        super.onBackPressed();
+    }
+
+    //保存新数据
+    private void saveNewData(){
+        if (!oldData.equals(editText.getText().toString())) {
+            NoteCRUD noteCRUD = new NoteCRUD(NoteViewActivity.this);
+            noteCRUD.upDataNote(note_id,oldTitle,editText.getText().toString());
+        }
+        finish();
     }
 }

@@ -59,6 +59,13 @@ public class NoteCRUD {
         db.close();
     }
 
+    //删除所有笔记
+    public void removeAllNotes(String table){
+        db = noteDatabaseHelper.getWritableDatabase();
+        db.delete(table,null,null);
+        db.close();
+    }
+
     //修改笔记
     public void upDataNote(long note_id,String title,String data){
         db = noteDatabaseHelper.getWritableDatabase();

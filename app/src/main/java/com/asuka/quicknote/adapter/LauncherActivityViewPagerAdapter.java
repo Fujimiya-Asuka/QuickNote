@@ -22,10 +22,10 @@ public class LauncherActivityViewPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch (position){
-            case 0 : return new SignInFragment();
-            default: return new RegisterFragment();
+        if (position == 0) {
+            return new SignInFragment();
         }
+        return new RegisterFragment();
     }
 
     //返回切换页面的数量

@@ -28,27 +28,30 @@ public class LauncherActivity extends FragmentActivity {
 
         viewPager2 = findViewById(R.id.viewpager2);
         tabLayout = findViewById(R.id.tablayout);
+
+        //提取登录信息
         SharedPreferences preferences =getSharedPreferences("config", Context.MODE_PRIVATE);
-        int isLogin = preferences.getInt("isLogin",0);//提取是否已登录信息
+        int isLogin = preferences.getInt("isLogin",0);
         if(isLogin==1){
             Intent intent = new Intent(LauncherActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         }else {
+            /*初始化viewPager2*/
             final ArrayList<String> tapName = new ArrayList<>();
             tapName.add("登录");
             tapName.add("注册");
             LauncherActivityViewPagerAdapter viewPagerAdapter = new LauncherActivityViewPagerAdapter(this,tapName);
             viewPager2.setAdapter(viewPagerAdapter);
+
+            /*设置tableLayout标签，与viewPager2进行绑定联动*/
             TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
                 @Override
                 public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                    switch (position){
-                        case 0 :
-                            tab.setText(tapName.get(0));
-                            break;
-                        default:
-                            tab.setText(tapName.get(1));
+                    if (position == 0) {
+                        tab.setText(tapName.get(0));
+                    } else {
+                        tab.setText(tapName.get(1));
                     }
                 }
             });
