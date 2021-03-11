@@ -3,14 +3,12 @@ package com.asuka.quicknote.activity;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.myClass.Note;
 import com.asuka.quicknote.db.NoteCRUD;

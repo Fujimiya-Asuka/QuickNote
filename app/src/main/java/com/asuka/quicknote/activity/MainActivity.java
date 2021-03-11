@@ -1,25 +1,29 @@
 package com.asuka.quicknote.activity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager2.widget.ViewPager2;
 import android.annotation.SuppressLint;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.adapter.MainActivityViewPagerAdapter;
+import com.asuka.quicknote.adapter.NoteRecyclerViewAdapter;
 import com.asuka.quicknote.db.NoteCRUD;
 import com.asuka.quicknote.fragment.NoteMainFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -39,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager2;
     private TabLayoutMediator tabLayoutMediator;
     public int fragmentId=0; //用来记录当前的Fragment
-
     final List<String> tableName = new ArrayList<String>(){{add("笔记");add("待办");}};
 
 
@@ -121,13 +124,29 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.AAA:
-                Toast.makeText(MainActivity.this, "点击AAA", Toast.LENGTH_SHORT).show();
+
                 break;
             case R.id.dropTable:
                 if(fragmentId==1){
-                    new NoteCRUD(this).removeAllNotes("NOTE");
-                    Toast.makeText(MainActivity.this, "删除了NOTE", Toast.LENGTH_SHORT).show();
-                    onResume();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("是否要清空所有笔记？");
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            new NoteCRUD(MainActivity.this).removeAllNotes("NOTE");
+                            NoteMainFragment noteMainFragment = (NoteMainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_note_main);
+                            onResume();
+                        }
+                    });
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //什么也不做
+                        }
+                    });
+                    builder.create();
+                    builder.show();
+                    break;
                 }
             default:
         }

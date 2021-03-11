@@ -19,7 +19,7 @@ import com.asuka.quicknote.R;
  */
 public class ToDoMainFragment extends Fragment {
 
-    private final String TAG = "FragmentB";
+    private final String TAG = "FragmentB: ";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

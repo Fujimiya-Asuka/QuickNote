@@ -1,11 +1,17 @@
 package com.asuka.quicknote.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.appcompat.widget.SearchView;
+
 import android.widget.Toast;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.activity.MainActivity;
@@ -32,13 +39,15 @@ public class NoteMainFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private final String TAG = "FragmentA";
+    private final String TAG = "FragmentA: ";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private FragmentActivity fragmentActivity;
     private RecyclerView recyclerView;
     private NoteRecyclerViewAdapter noteRecyclerViewAdapter;
     private SearchView searchView;
+    private LocalBroadcastManager localBroadcastManager;
+    private DeleteThisNoteReceiver delete;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -84,6 +93,8 @@ public class NoteMainFragment extends Fragment {
         // Inflate the layout for this fragment
         Log.d(TAG,TAG+"onCreateView");
         return inflater.inflate(R.layout.fragment_note_main_, container, false);
+
+
     }
 
     @Override
@@ -100,6 +111,23 @@ public class NoteMainFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(noteRecyclerViewAdapter);
         searchView = fragmentActivity.findViewById(R.id.searchView_main);
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(fragmentActivity);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.asuka.quicknote.activity.DELETE_THIS_NOTE");
+        delete = new DeleteThisNoteReceiver();
+        localBroadcastManager.registerReceiver(delete,intentFilter);
+
+    }
+
+    //广播接收器，用来接收删除笔记的广播，刷新RecycleView
+    class DeleteThisNoteReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            List<Note> allNotes = new NoteCRUD(context).getAllNotes();
+            noteRecyclerViewAdapter.setNoteList(allNotes);
+            noteRecyclerViewAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -124,7 +152,7 @@ public class NoteMainFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 NoteCRUD noteCRUD = new NoteCRUD(NoteMainFragment.this.fragmentActivity);
-                List<Note> notes = noteCRUD.searchNotes(newText);
+                List<Note> notes = noteCRUD.searchNotes(newText.trim()); //trim()去除空格
                 noteRecyclerViewAdapter.setNoteList(notes);
                 noteRecyclerViewAdapter.notifyDataSetChanged();
                 if (notes.size() == 0) {
@@ -136,7 +164,9 @@ public class NoteMainFragment extends Fragment {
 
     }
 
-
-
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        localBroadcastManager.unregisterReceiver(delete);
+    }
 }
