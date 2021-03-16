@@ -7,8 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.myClass.Note;
 import com.asuka.quicknote.db.NoteCRUD;
@@ -17,14 +18,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class NoteViewActivity extends AppCompatActivity {
 
-    private EditText editText;
+    private TextView textView;
     private FloatingActionButton remove_btn;
 
     private long note_id=0;
     private Note note;
     private String oldTitle;
     private String oldData;
-    private NoteCRUD noteCRUD = new NoteCRUD(NoteViewActivity.this);
+    private NoteCRUD noteCRUD;
 
 
     @Override
@@ -35,8 +36,9 @@ public class NoteViewActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_note_view);
         CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.collapsingToolbar_note_view);
         ImageView imageView = findViewById(R.id.app_bar_image_note_view);
-        editText = findViewById(R.id.note_view_edit);
+        textView = findViewById(R.id.note_view_edit);
         remove_btn = findViewById(R.id.removeBtn_note_view);
+        noteCRUD = new NoteCRUD(NoteViewActivity.this);
 
         //获取被点击的note对象
         note_id = intent.getLongExtra("Note_id",-1);
@@ -52,8 +54,11 @@ public class NoteViewActivity extends AppCompatActivity {
         if(actionBar!=null){
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-//        collapsingToolbar.setTitle(oldTitle);
-        editText.setText(oldData);
+
+        //设置标题
+        collapsingToolbar.setTitle(oldTitle);
+        //设置文本
+        textView.setText(oldData);
 
         //删除笔记
         remove_btn.setOnClickListener(new View.OnClickListener() {
@@ -87,9 +92,9 @@ public class NoteViewActivity extends AppCompatActivity {
 
     //保存新数据
     private void saveNewData(){
-        if (!oldData.equals(editText.getText().toString())) {
+        if (!oldData.equals(textView.getText().toString())) {
             NoteCRUD noteCRUD = new NoteCRUD(NoteViewActivity.this);
-            noteCRUD.upDataNote(note_id,oldTitle,editText.getText().toString());
+            noteCRUD.upDataNote(note_id,oldTitle,textView.getText().toString());
         }
         finish();
     }

@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.asuka.quicknote.myClass.Note;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class NoteCRUD {
@@ -21,6 +24,17 @@ public class NoteCRUD {
     }
 
     //添加笔记
+    public long addNote(String title, String data, String time){
+        db = noteDatabaseHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("title",title);
+        contentValues.put("data",data);
+        contentValues.put("time",time);
+        long noteID = db.insert(table, null, contentValues); //insert()返回一个主键的值
+        contentValues.clear();
+        return noteID;
+    }
+
     public long addNote(String title, String data){
         db = noteDatabaseHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -95,18 +109,23 @@ public class NoteCRUD {
     //获取所有的笔记
     public List<Note> getAllNotes(){
         db = noteDatabaseHelper.getWritableDatabase();
-        List<Note> NoteList = new ArrayList<>();
+        List<Note> NoteList = new ArrayList<>(50);
         Cursor cursor = db.rawQuery("SELECT * FROM NOTE ORDER BY ID DESC",null);//将查询到的数据库信息以ID列表倒序排列
         while (cursor.moveToNext()){
             String title = cursor.getString(cursor.getColumnIndex("title"));
             String data = cursor.getString(cursor.getColumnIndex("data"));
             long noteId = cursor.getInt(cursor.getColumnIndex("id"));
-            Note note = new Note(title,data,noteId);
-            NoteList.add(note);
+            String time = cursor.getString(cursor.getColumnIndex("time"));
+            NoteList.add(new Note(title,data,noteId,time));
         }
         cursor.close();
         db.close();
         return NoteList;
+    }
+
+    //关闭数据库
+    public void closeDB(){
+        db.close();
     }
 
 }

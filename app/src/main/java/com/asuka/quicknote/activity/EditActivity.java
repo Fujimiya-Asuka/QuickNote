@@ -14,6 +14,9 @@ import android.widget.Toast;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.db.NoteCRUD;
 import com.asuka.quicknote.db.NoteDatabaseHelper;
+import com.asuka.quicknote.myClass.Time;
+
+import java.util.Date;
 
 public class EditActivity extends AppCompatActivity {
 
@@ -55,6 +58,7 @@ public class EditActivity extends AppCompatActivity {
                 NoteCRUD noteCRUD = new NoteCRUD(EditActivity.this);
                 String title = note_title_edit.getText().toString();
                 String data = note_data_edit.getText().toString();
+                String time = new Time(new Date()).getTime();
                 if ("".equals(title) || "".equals(data)){
                     Toast.makeText(EditActivity.this,"标题或内容不能为空",Toast.LENGTH_SHORT).show();
                 }else {
@@ -64,7 +68,8 @@ public class EditActivity extends AppCompatActivity {
                         noteCRUD.upDataNote(note_id,title,data);
                     }else {
                         //执行添加操作
-                        noteCRUD.addNote(title,data);
+                        noteCRUD.addNote(title,data,time);
+                        noteCRUD.closeDB();
                     }
                     startActivity(intent);
                 }

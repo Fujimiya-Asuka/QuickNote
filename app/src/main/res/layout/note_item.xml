@@ -9,31 +9,38 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/test_btn"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:text="标题" />
-
-        <TextView
-            android:id="@+id/note_title"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="title" />
-
-        <Button
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:text="内容" />
-
-        <TextView
-            android:id="@+id/note_data"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"/>
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:text="data" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/note_title_cardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="标题"
+                />
+
+            <TextView
+                android:id="@+id/note_data_cardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="内容"
+                />
+
+            <TextView
+                android:id="@+id/note_time_card_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="20213月16日 12：31"/>
+
+        </LinearLayout>
+
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -25,10 +25,9 @@ public class NoteDatabaseHelper extends SQLiteOpenHelper {
         String CRATE_NOTE = "create table NOTE (" +
                 "id integer primary key autoincrement," +
                 "title text," +
-                "data text )";
+                "data text," +
+                "time text)";
         sqLiteDatabase.execSQL(CRATE_NOTE);
-
-
 
     }
 

@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -28,6 +30,7 @@ import com.asuka.quicknote.adapter.NoteRecyclerViewAdapter;
 import com.asuka.quicknote.db.NoteCRUD;
 import com.asuka.quicknote.myClass.Note;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -48,6 +51,7 @@ public class NoteMainFragment extends Fragment {
     private SearchView searchView;
     private LocalBroadcastManager localBroadcastManager;
     private DeleteThisNoteReceiver delete;
+    private List<Note> allNotes;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -118,16 +122,8 @@ public class NoteMainFragment extends Fragment {
         delete = new DeleteThisNoteReceiver();
         localBroadcastManager.registerReceiver(delete,intentFilter);
 
-    }
 
-    //广播接收器，用来接收删除笔记的广播，刷新RecycleView
-    class DeleteThisNoteReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            List<Note> allNotes = new NoteCRUD(context).getAllNotes();
-            noteRecyclerViewAdapter.setNoteList(allNotes);
-            noteRecyclerViewAdapter.notifyDataSetChanged();
-        }
+
     }
 
     @Override
@@ -139,11 +135,13 @@ public class NoteMainFragment extends Fragment {
         mainActivity.setFragmentId(1);//记录当前Fragment返回给Activity
 
         NoteCRUD noteCRUD = new NoteCRUD(this.fragmentActivity);
-        List<Note> allNotes = noteCRUD.getAllNotes();
+        allNotes = noteCRUD.getAllNotes();
         noteRecyclerViewAdapter.setNoteList(allNotes);
         noteRecyclerViewAdapter.notifyDataSetChanged(); //告诉适配器数据已经发生变化
 
         //搜索框
+        searchView.setQueryHint("搜索笔记");//设置搜索提示
+        searchView.setBackgroundColor(Color.TRANSPARENT);//设置下划线透明
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -168,5 +166,22 @@ public class NoteMainFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         localBroadcastManager.unregisterReceiver(delete);
+    }
+//
+//    @Override
+//    public void onSaveInstanceState(@NonNull Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        outState.putSerializable("note", (Serializable) allNotes);
+//    }
+//
+
+    //广播接收器，用来接收删除笔记的广播，刷新RecycleView
+    class DeleteThisNoteReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            List<Note> allNotes = new NoteCRUD(context).getAllNotes();
+            noteRecyclerViewAdapter.setNoteList(allNotes);
+            noteRecyclerViewAdapter.notifyDataSetChanged();
+        }
     }
 }

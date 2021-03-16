@@ -14,7 +14,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,12 +28,14 @@ import com.asuka.quicknote.adapter.MainActivityViewPagerAdapter;
 import com.asuka.quicknote.adapter.NoteRecyclerViewAdapter;
 import com.asuka.quicknote.db.NoteCRUD;
 import com.asuka.quicknote.fragment.NoteMainFragment;
+import com.asuka.quicknote.myClass.Time;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager2;
     private TabLayoutMediator tabLayoutMediator;
     public int fragmentId=0; //用来记录当前的Fragment
-    final List<String> tableName = new ArrayList<String>(){{add("笔记");add("待办");}};
+    final List<String> tableName = new ArrayList<String>(){{add("便签");add("待办");}};
 
 
     public void setFragmentId(int fragmentId) {
@@ -101,8 +105,14 @@ public class MainActivity extends AppCompatActivity {
                         drawerLayout.closeDrawers();
                         break;
                     case R.id.nav_CCC:
-                        Toast.makeText(MainActivity.this, "点击CCC", Toast.LENGTH_SHORT).show();
-                        drawerLayout.closeDrawers();
+                        Toast.makeText(MainActivity.this, "注销登录", Toast.LENGTH_SHORT).show();
+                        //修改登录信息
+                        //利用SharedPreference将已经登录信息存储到config文件中
+                        SharedPreferences.Editor editor = MainActivity.this.getSharedPreferences("config", Context.MODE_PRIVATE).edit();
+                        editor.putInt("isLogin", 0);
+                        editor.apply();
+                        finish();
+                        startActivity(new Intent(MainActivity.this,LauncherActivity.class));
                         break;
                 }
                 return true;
@@ -124,8 +134,20 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.AAA:
-
+                NoteCRUD noteCRUD = new NoteCRUD(MainActivity.this);
+                String title = "听雨";
+                String data ="那一刻，我的心情随着雨声沸腾着，一些旧时光里的人或者事，就像雨珠一样飘飞，穿过时光，" +
+                        "越过天涯，轻轻地落在心上，溅起一层层涟漪。而在这涟漪的波光里，仿佛一切都生动起来，鲜活起来。若雨，" +
+                        "丝丝缠绵，滴滴惊心。真是应了宋代词人蒋捷那句词：“悲欢离合总无情，一任阶前点滴到天明" +
+                        "雨是最能渲染情绪的，不同的人听雨，就能听出不一样的感觉。不同的心境，感受也就各异。" +
+                        "心情好的人，听出了欢喜，细品出了轻快；忧伤的人，听出了忧愁，浅尝出了失落，寂寞。" +
+                        "而纵观古今，很多文人墨客都喜欢借雨抒发情怀，吟唱心灵之歌。";
+                String time = new Time(new Date()).getTime();
+                noteCRUD.addNote(title,data,time);
+                noteCRUD.closeDB();
+                onResume();
                 break;
+
             case R.id.dropTable:
                 if(fragmentId==1){
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -134,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             new NoteCRUD(MainActivity.this).removeAllNotes("NOTE");
-                            NoteMainFragment noteMainFragment = (NoteMainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_note_main);
                             onResume();
                         }
                     });

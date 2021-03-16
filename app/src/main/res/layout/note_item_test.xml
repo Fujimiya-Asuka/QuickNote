@@ -1,73 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.daimajia.swipe.SwipeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeLayout"
     android:layout_marginTop="10dp"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp">
+    android:layout_marginStart="15dp"
+    android:layout_marginEnd="15dp"
+    app:clickToClose="true"
+    >
 
     <!-- Bottom View Start-->
     <LinearLayout
-        android:background="#66ddff00"
+        android:background="@android:color/transparent"
         android:id="@+id/bottom_wrapper"
         android:layout_width="100dp"
-        android:weightSum="1"
         android:layout_height="match_parent"
         android:orientation="horizontal">
         <!--What you want to show-->
-        <Button
-            android:id="@+id/deleteThisNote_main"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="删除"
-            android:background="@drawable/btn_background2"/>
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+            <Button
+                android:id="@+id/deleteThisNote_main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="删除"
+                android:background="@drawable/btn_background2"/>
+        </androidx.cardview.widget.CardView>
+
     </LinearLayout>
     <!-- Bottom View End-->
 
     <!-- Surface View Start -->
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#E8E8E8"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
         >
-        <!--What you want to show in SurfaceView-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:paddingTop="10dp"
+            android:paddingLeft="14dp"
+            android:paddingBottom="10dp"
+            android:paddingRight="14dp"
+            >
+            <!--What you want to show in SurfaceView-->
             <LinearLayout
                 android:id="@+id/note_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="30dp"
+
                 android:orientation="vertical"
                 android:layout_gravity="center_vertical"
                 >
 
                 <TextView
-                    android:id="@+id/test_btn1"
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:text="标题" />
-
-                <TextView
-                    android:id="@+id/note_title1"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="title" />
-
-                <TextView
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:text="内容" />
-
-                <TextView
-                    android:id="@+id/note_data1"
+                    android:id="@+id/note_title_listView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:text="data" />
+                    android:text="标题"
+                    android:textColor="#000000"
+                    android:singleLine="true"
+                    android:textSize="22dp"/>
+
+                <TextView
+                    android:id="@+id/note_data_listView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="内容"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/note_time_listView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2021年3月16日 10:10"
+                    android:textSize="12dp" />
 
             </LinearLayout>
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
     <!-- Surface View End -->
 
 </com.daimajia.swipe.SwipeLayout>
