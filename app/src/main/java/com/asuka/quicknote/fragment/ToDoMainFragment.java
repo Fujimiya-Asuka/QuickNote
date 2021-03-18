@@ -3,7 +3,12 @@ package com.asuka.quicknote.fragment;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.asuka.quicknote.R;
+import com.asuka.quicknote.activity.MainActivity;
+import com.asuka.quicknote.adapter.NoteRecyclerViewAdapter;
+import com.asuka.quicknote.adapter.ToDoRecycleViewAdapter;
+import com.asuka.quicknote.db.NoteCRUD;
+import com.asuka.quicknote.db.ToDoCRUD;
+import com.asuka.quicknote.myClass.Note;
+import com.asuka.quicknote.myClass.ToDo;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +39,12 @@ public class ToDoMainFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private FragmentActivity fragmentActivity;
+    private RecyclerView recyclerView;
+    private ToDoRecycleViewAdapter toDoRecycleViewAdapter;
+    private SearchView searchView;
+    private List<ToDo> allToDo;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -74,12 +94,24 @@ public class ToDoMainFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         Log.d(TAG,TAG+"onActivityCreated");
         super.onActivityCreated(savedInstanceState);
+        fragmentActivity = requireActivity();
+
+        recyclerView = fragmentActivity.findViewById(R.id.todoRecycleView_main);
+        toDoRecycleViewAdapter = new ToDoRecycleViewAdapter();
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(fragmentActivity);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(toDoRecycleViewAdapter);
+        ToDoCRUD toDoCRUD = new ToDoCRUD(this.fragmentActivity);
+        allToDo = toDoCRUD.getAllTodo();
+        toDoRecycleViewAdapter.setTodoList(allToDo);
     }
 
     @Override
     public void onResume() {
         Log.d(TAG,TAG+"onResume");
         super.onResume();
+        MainActivity mainActivity = (MainActivity) requireActivity();
+        mainActivity.setFragmentId(2);//记录当前Fragment返回给Activity
     }
 
 

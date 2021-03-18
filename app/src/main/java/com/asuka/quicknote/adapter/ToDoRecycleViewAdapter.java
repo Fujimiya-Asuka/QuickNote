@@ -1,0 +1,103 @@
+package com.asuka.quicknote.adapter;
+
+import android.content.Intent;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.asuka.quicknote.R;
+import com.asuka.quicknote.activity.NoteViewActivity;
+import com.asuka.quicknote.db.ToDoCRUD;
+import com.asuka.quicknote.myClass.ToDo;
+import com.daimajia.swipe.SwipeLayout;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ToDoRecycleViewAdapter extends RecyclerView.Adapter <ToDoRecycleViewAdapter.ViewHolder>{
+    private final String TAG = "ToDoRecycleViewAdapter";
+    ToDoCRUD todoCRUD;
+    List<ToDo> todoList = new ArrayList<>(50);
+
+    public void setTodoList(List<ToDo> todoList) {
+        this.todoList = todoList;
+    }
+
+    @NonNull
+    @Override
+    public ToDoRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder: NoteRecyclerViewAdapter");
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.todo_list,parent,false);
+        final ViewHolder holder = new ViewHolder(view);
+        todoCRUD = new ToDoCRUD(parent.getContext());
+
+        holder.todoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getAdapterPosition();
+                ToDo todo = todoList.get(position);
+                long id = todo.getId();
+                Intent intent = new Intent(parent.getContext(), NoteViewActivity.class);
+                intent.putExtra("todoID",id); //向下一个活动传递todoID
+//                parent.getContext().startActivity(intent);
+            }
+        });
+
+        //滑动删除，删除数据并发送广播通知刷新UI
+        holder.deleteThisTodo_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = holder.getAdapterPosition();
+                ToDo todo = todoList.get(position);
+                long id = todo.getId();
+                ToDoCRUD toDoCRUD = new ToDoCRUD(v.getContext());
+                toDoCRUD.removeTodo(id);
+//                LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(v.getContext());
+//                Intent intent = new Intent("com.asuka.quicknote.activity.DELETE_THIS_NOTE");
+//                localBroadcastManager.sendBroadcast(intent);
+            }
+        });
+
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull final ToDoRecycleViewAdapter.ViewHolder holder,int position) {
+        Log.d(TAG, "onBindViewHolder: NoteRecyclerViewAdapter");
+        final ToDo todo = todoList.get(position);
+        holder.todo_title.setText(todo.getTitle());
+        holder.todo_time.setText(todo.getTime());
+    }
+
+    @Override
+    public int getItemCount() {
+        return todoList.size();
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        private View todoView;
+        private TextView todo_title,todo_time;
+        private SwipeLayout swipeLayout;
+        private Button deleteThisTodo_btn;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            todoView = itemView;
+            swipeLayout = itemView.findViewById(R.id.swipeLayout_todo);
+            swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
+            //标题
+            todo_title = itemView.findViewById(R.id.todo_title);
+            //时间
+            todo_time = itemView.findViewById(R.id.todo_time);
+            //滑动删按钮
+            deleteThisTodo_btn = itemView.findViewById(R.id.deleteThisTodo_btn);
+        }
+    }
+
+
+}

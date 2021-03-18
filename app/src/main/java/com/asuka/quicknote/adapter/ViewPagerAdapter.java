@@ -10,11 +10,11 @@ import com.asuka.quicknote.fragment.ToDoMainFragment;
 
 import java.util.List;
 
-public class MainActivityViewPagerAdapter extends FragmentStateAdapter {
+public class ViewPagerAdapter extends FragmentStateAdapter {
 
     private List<String> tabNameList;
 
-    public MainActivityViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<String> tableNameList) {
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, List<String> tableNameList) {
         super(fragmentActivity);
         this.tabNameList = tableNameList;
     }

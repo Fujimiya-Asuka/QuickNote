@@ -45,6 +45,7 @@ public class NoteMainFragment extends Fragment {
     private final String TAG = "FragmentA: ";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
     private FragmentActivity fragmentActivity;
     private RecyclerView recyclerView;
     private NoteRecyclerViewAdapter noteRecyclerViewAdapter;
@@ -92,13 +93,10 @@ public class NoteMainFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.d(TAG,TAG+"onCreateView");
         return inflater.inflate(R.layout.fragment_note_main_, container, false);
-
-
     }
 
     @Override
@@ -114,8 +112,11 @@ public class NoteMainFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(fragmentActivity);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(noteRecyclerViewAdapter);
-        searchView = fragmentActivity.findViewById(R.id.searchView_main);
+        NoteCRUD noteCRUD = new NoteCRUD(this.fragmentActivity);
+        allNotes = noteCRUD.getAllNotes();
+        noteRecyclerViewAdapter.setNoteList(allNotes);
 
+        searchView = fragmentActivity.findViewById(R.id.searchView_main);
         localBroadcastManager = LocalBroadcastManager.getInstance(fragmentActivity);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.asuka.quicknote.activity.DELETE_THIS_NOTE");
@@ -134,10 +135,8 @@ public class NoteMainFragment extends Fragment {
         MainActivity mainActivity = (MainActivity) requireActivity();
         mainActivity.setFragmentId(1);//记录当前Fragment返回给Activity
 
-        NoteCRUD noteCRUD = new NoteCRUD(this.fragmentActivity);
-        allNotes = noteCRUD.getAllNotes();
-        noteRecyclerViewAdapter.setNoteList(allNotes);
-        noteRecyclerViewAdapter.notifyDataSetChanged(); //告诉适配器数据已经发生变化
+
+//        noteRecyclerViewAdapter.notifyDataSetChanged(); //告诉适配器数据已经发生变化
 
         //搜索框
         searchView.setQueryHint("搜索笔记");//设置搜索提示

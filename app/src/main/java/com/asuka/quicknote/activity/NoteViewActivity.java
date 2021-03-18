@@ -3,6 +3,8 @@ package com.asuka.quicknote.activity;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -18,15 +20,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class NoteViewActivity extends AppCompatActivity {
 
-    private TextView textView;
-    private FloatingActionButton remove_btn;
-
-    private long note_id=0;
+    private Context mContent = NoteViewActivity.this;
+    private long noteID = 0;
     private Note note;
-    private String oldTitle;
-    private String oldData;
-    private NoteCRUD noteCRUD;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,19 +31,9 @@ public class NoteViewActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Toolbar toolbar = findViewById(R.id.toolbar_note_view);
         CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.collapsingToolbar_note_view);
-        ImageView imageView = findViewById(R.id.app_bar_image_note_view);
-        textView = findViewById(R.id.note_view_edit);
-        remove_btn = findViewById(R.id.removeBtn_note_view);
-        noteCRUD = new NoteCRUD(NoteViewActivity.this);
-
-        //获取被点击的note对象
-        note_id = intent.getLongExtra("Note_id",-1);
-        if (note_id!=-1){
-            noteCRUD = new NoteCRUD(NoteViewActivity.this);
-            note = noteCRUD.getNote(note_id);
-            oldTitle = note.getTitle();
-            oldData = note.getData();
-        }
+        final ImageView imageView = findViewById(R.id.app_bar_image_note_view);
+        TextView textView = findViewById(R.id.note_view_edit);
+        FloatingActionButton editBtn = findViewById(R.id.removeBtn_note_view);
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -55,28 +41,32 @@ public class NoteViewActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        //设置标题
-        collapsingToolbar.setTitle(oldTitle);
-        //设置文本
-        textView.setText(oldData);
+        //获取被点击的note对象
+        noteID = intent.getLongExtra("Note_id",-1);
+        if (noteID !=-1){
+            NoteCRUD noteCRUD = new NoteCRUD(NoteViewActivity.this);
+            note = noteCRUD.getNote(noteID);
+            //设置标题
+            collapsingToolbar.setTitle(note.getTitle());
+            //设置文本
+            textView.setText(note.getData());
+        }
 
-        //删除笔记
-        remove_btn.setOnClickListener(new View.OnClickListener() {
+        //跳转编辑笔记，传递NoteID
+        editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                noteCRUD.removeNote(note_id);
-                finish();
+                startActivity(new Intent(mContent, NoteEditActivity.class).putExtra("Note_id", noteID));
             }
         });
 
     }
 
-
+    //左上角返回按键
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home :
-                saveNewData();
                 finish();
                 return true;
         }
@@ -86,16 +76,6 @@ public class NoteViewActivity extends AppCompatActivity {
     //重写返回方法
     @Override
     public void onBackPressed() {
-        saveNewData();
         super.onBackPressed();
-    }
-
-    //保存新数据
-    private void saveNewData(){
-        if (!oldData.equals(textView.getText().toString())) {
-            NoteCRUD noteCRUD = new NoteCRUD(NoteViewActivity.this);
-            noteCRUD.upDataNote(note_id,oldTitle,textView.getText().toString());
-        }
-        finish();
     }
 }

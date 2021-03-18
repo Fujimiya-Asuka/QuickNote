@@ -1,6 +1,5 @@
 package com.asuka.quicknote.adapter;
 
-import android.app.Notification;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,10 +22,9 @@ import java.util.List;
 
 public class NoteRecyclerViewAdapter extends RecyclerView.Adapter <NoteRecyclerViewAdapter.ViewHolder>{
     private final String TAG = "NoteRecyclerViewAdapter";
-    List<Note> noteList = new ArrayList<>();
-    List<Note> noteIDList = new ArrayList<>();
+    private boolean isUesCardView;
     NoteCRUD noteCRUD;
-
+    List<Note> noteList = new ArrayList<>(50);
     public void setNoteList(List<Note> noteList) {
         this.noteList = noteList;
     }
@@ -35,9 +33,15 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter <NoteRecyclerV
     @Override
     public NoteRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: NoteRecyclerViewAdapter");
-        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item_test,parent,false);
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item_list,parent,false);
         final ViewHolder holder = new ViewHolder(view);
         noteCRUD = new NoteCRUD(parent.getContext());
+
+        //添加右滑动
+        holder.swipeLayout.addDrag(SwipeLayout.DragEdge.Left,holder.swipeLayout.findViewById(R.id.bottom_wrapper));
+        //关闭向右滑动
+        holder.swipeLayout.setRightSwipeEnabled(false);
+
         holder.noteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,17 +97,17 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter <NoteRecyclerV
             super(itemView);
             noteView = itemView;
 
-            swipeLayout = itemView.findViewById(R.id.swipeLayout);
+            swipeLayout = itemView.findViewById(R.id.swipeLayout_note);
             swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
             noteView = itemView.findViewById(R.id.note_view);
             //标题
-            tv_note_title = itemView.findViewById(R.id.note_title_listView);
+            tv_note_title = itemView.findViewById(R.id.note_title);
             //内容
-            tv_note_data = itemView.findViewById(R.id.note_data_listView);
+            tv_note_data = itemView.findViewById(R.id.note_data);
             //时间
-            tv_note_time = itemView.findViewById(R.id.note_time_listView);
+            tv_note_time = itemView.findViewById(R.id.note_time);
             //滑动删按钮
-            deleteThisNote_btn = itemView.findViewById(R.id.deleteThisNote_main);
+            deleteThisNote_btn = swipeLayout.findViewById(R.id.deleteThisNote_btn);
 
         }
     }

@@ -9,7 +9,7 @@
         android:title="测试按钮"
         app:showAsAction="always" />
     <item
-        android:id="@+id/dropTable"
+        android:id="@+id/deleteTable"
         android:icon="@drawable/ic_baseline_delete_24"
         android:title="删除所有"
         app:showAsAction="always" />

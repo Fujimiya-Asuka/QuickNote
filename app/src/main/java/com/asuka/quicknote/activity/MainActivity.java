@@ -6,17 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager2.widget.ViewPager2;
-import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,10 +20,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.asuka.quicknote.R;
-import com.asuka.quicknote.adapter.MainActivityViewPagerAdapter;
-import com.asuka.quicknote.adapter.NoteRecyclerViewAdapter;
+import com.asuka.quicknote.adapter.ViewPagerAdapter;
 import com.asuka.quicknote.db.NoteCRUD;
-import com.asuka.quicknote.fragment.NoteMainFragment;
 import com.asuka.quicknote.myClass.Time;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -41,6 +35,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
+    private final Context mContext = MainActivity.this;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private TabLayout tabLayout;
@@ -80,13 +75,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        //添加笔记按钮 跳转到笔记编辑界面
+        //添加按钮
         FloatingActionButton addBtn = findViewById(R.id.add_btn_main);
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, EditActivity.class);
-                startActivity(intent);
+                //在便签页 跳转到笔记编辑界面
+                if(fragmentId==1){
+                    startActivity(new Intent(MainActivity.this, NoteEditActivity.class));
+                }
+                //在待办页
+                else if(fragmentId==2){
+                    startActivity(new Intent(MainActivity.this, ToDoEditActivity.class));
+                }
             }
         });
 
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_CCC:
                         Toast.makeText(MainActivity.this, "注销登录", Toast.LENGTH_SHORT).show();
                         //修改登录信息
-                        //利用SharedPreference将已经登录信息存储到config文件中
+                        //利用SharedPreference将登录信息存储到config文件中
                         SharedPreferences.Editor editor = MainActivity.this.getSharedPreferences("config", Context.MODE_PRIVATE).edit();
                         editor.putInt("isLogin", 0);
                         editor.apply();
@@ -122,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     //为toolbar加载菜单xml文件
-    @SuppressLint("ResourceType")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_main, menu);
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 onResume();
                 break;
 
-            case R.id.dropTable:
+            case R.id.deleteTable:
                 if(fragmentId==1){
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("是否要清空所有笔记？");
@@ -168,8 +168,27 @@ public class MainActivity extends AppCompatActivity {
                     builder.create();
                     builder.show();
                     break;
+                }else if(fragmentId==2){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("是否要清空所有待办？");
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            new NoteCRUD(MainActivity.this).removeAllNotes("TODO");
+                            onResume();
+                        }
+                    });
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //什么也不做
+                        }
+                    });
+                    builder.create();
+                    builder.show();
                 }
             default:
+                break;
         }
         return true;
     }
@@ -188,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Log.d(TAG, "onResume");
         //初始化ViewPager2
-        MainActivityViewPagerAdapter mainActivityViewPagerAdapter = new MainActivityViewPagerAdapter(this,tableName);
+        ViewPagerAdapter mainActivityViewPagerAdapter = new ViewPagerAdapter(this,tableName);
         viewPager2.setAdapter(mainActivityViewPagerAdapter);
         tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override

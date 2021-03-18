@@ -34,7 +34,7 @@
                 />
 
             <TextView
-                android:id="@+id/note_time_card_view"
+                android:id="@+id/note_time_cardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="20213月16日 12：31"/>

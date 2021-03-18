@@ -7,20 +7,17 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.asuka.quicknote.myClass.Note;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class NoteCRUD {
 
     private final String table = "NOTE";
-    private NoteDatabaseHelper noteDatabaseHelper;
+    private DatabaseHelper noteDatabaseHelper;
     private SQLiteDatabase db;
 
     public NoteCRUD(Context context) {
-        noteDatabaseHelper = new NoteDatabaseHelper(context);
+        noteDatabaseHelper = new DatabaseHelper(context);
     }
 
     //添加笔记
@@ -35,17 +32,6 @@ public class NoteCRUD {
         return noteID;
     }
 
-    public long addNote(String title, String data){
-        db = noteDatabaseHelper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("title",title);
-        contentValues.put("data",data);
-        long noteID = db.insert(table, null, contentValues); //insert()返回一个主键的值
-        contentValues.clear();
-        db.close();
-        return noteID;
-    }
-
     //查找笔记，模糊匹配
     public List<Note> searchNotes(String s){
         db = noteDatabaseHelper.getWritableDatabase();
@@ -55,10 +41,11 @@ public class NoteCRUD {
         final String s3 = " OR data LIKE "+ "'%" + s + "%'";
         Cursor cursor = db.rawQuery(s1+s2+s3,null);//将查询到的数据库信息以ID列表倒序排列
         while (cursor.moveToNext()){
+            long noteId = cursor.getInt(cursor.getColumnIndex("id"));
             String title = cursor.getString(cursor.getColumnIndex("title"));
             String data = cursor.getString(cursor.getColumnIndex("data"));
-            long noteId = cursor.getInt(cursor.getColumnIndex("id"));
-            Note note = new Note(title,data,noteId);
+            String time = cursor.getString(cursor.getColumnIndex("time"));
+            Note note = new Note(title,data,noteId,time);
             NoteList.add(note);
         }
         cursor.close();
@@ -81,11 +68,12 @@ public class NoteCRUD {
     }
 
     //修改笔记
-    public void upDataNote(long note_id,String title,String data){
+    public void upDateNote(long note_id, String newTitle, String newData, String newTime){
         db = noteDatabaseHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("title",title);
-        contentValues.put("data",data);
+        contentValues.put("title",newTitle);
+        contentValues.put("data",newData);
+        contentValues.put("time",newTime);
         db.update(table,contentValues,"id=?",new String[]{""+note_id});
         db.close();
     }

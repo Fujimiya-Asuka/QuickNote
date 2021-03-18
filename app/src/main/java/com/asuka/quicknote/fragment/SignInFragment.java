@@ -23,7 +23,9 @@ import com.asuka.quicknote.activity.MainActivity;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.db.AccountDatabaseHelper;
 import com.asuka.quicknote.db.NoteCRUD;
+import com.asuka.quicknote.db.ToDoCRUD;
 import com.asuka.quicknote.myClass.Time;
+import com.asuka.quicknote.myClass.ToDo;
 
 import java.util.Date;
 
@@ -127,6 +129,12 @@ public class SignInFragment extends Fragment {
                             }
                             testCURD.closeDB();
 
+                            ToDoCRUD testToDoCRUD = new ToDoCRUD(fragmentActivity);
+                            for (int i = 0; i < 2; i++) {
+                                initToDo(testToDoCRUD);
+                            }
+                            testToDoCRUD.closeDB();
+
                             Intent intent = new Intent(fragmentActivity, MainActivity.class);
                             startActivity(intent);
                             fragmentActivity.finish();
@@ -172,6 +180,11 @@ public class SignInFragment extends Fragment {
         noteCRUD.addNote(title1,data1,new Time(new Date()).getTime());
         noteCRUD.addNote(title2,data2,new Time(new Date()).getTime());
         noteCRUD.addNote(title3,data3,new Time(new Date()).getTime());
+    }
+
+    private void initToDo(ToDoCRUD toDoCRUD){
+        final String title = "待办事项";
+        toDoCRUD.addTodo(title,new Time(new Date()).getTime());
     }
 
 }
