@@ -7,16 +7,17 @@
     android:layout_marginStart="15dp"
     android:layout_marginTop="10dp"
     android:layout_marginEnd="15dp"
-    app:clickToClose="true">
+    app:clickToClose="true"
+    >
 
     <!-- Bottom View Start-->
     <LinearLayout
         android:id="@+id/bottom_wrapper"
-        android:layout_width="100dp"
+        android:layout_width="95dp"
         android:layout_height="match_parent"
+        android:layout_gravity="right"
         android:background="@android:color/transparent"
-        android:orientation="horizontal"
-        android:layout_gravity="right">
+        android:orientation="horizontal">
         <!--What you want to show-->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -40,17 +41,20 @@
         android:layout_width="match_parent"
         android:layout_height="90dp"
         app:cardCornerRadius="20dp"
-        app:cardElevation="0dp">
+        app:cardElevation="0dp"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="#FFFFFF"
             android:orientation="vertical"
             android:paddingLeft="14dp"
             android:paddingTop="10dp"
             android:paddingRight="14dp"
-            android:paddingBottom="10dp">
+            android:paddingBottom="10dp"
+            >
+
             <!--What you want to show in SurfaceView-->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

@@ -81,11 +81,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //在便签页 跳转到笔记编辑界面
-                if(fragmentId==1){
+                if(fragmentId==0){
                     startActivity(new Intent(MainActivity.this, NoteEditActivity.class));
                 }
                 //在待办页
-                else if(fragmentId==2){
+                else if(fragmentId==1){
                     startActivity(new Intent(MainActivity.this, ToDoEditActivity.class));
                 }
             }
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.deleteTable:
-                if(fragmentId==1){
+                if(fragmentId==0){
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("是否要清空所有笔记？");
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     builder.create();
                     builder.show();
                     break;
-                }else if(fragmentId==2){
+                }else if(fragmentId==1){
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("是否要清空所有待办？");
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -198,8 +198,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "onStart");
-
-
     }
 
     @Override
@@ -209,6 +207,13 @@ public class MainActivity extends AppCompatActivity {
         //初始化ViewPager2
         ViewPagerAdapter mainActivityViewPagerAdapter = new ViewPagerAdapter(this,tableName);
         viewPager2.setAdapter(mainActivityViewPagerAdapter);
+
+        //判断viewPager是否默认加载ToDoFragment
+        if(fragmentId ==1){
+            //smoothScroll 是否需要平滑滑动，好像设置页面跳过超过10个的时候会有Bug。
+            viewPager2.setCurrentItem(1,false);
+        }
+
         tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
@@ -246,4 +251,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onDestroy");
     }
 
+//    //如果当前Activity是SingleTask模式，想要获得传过来的Intent的值必须要重写onNewIntent方法
+//    //调用setIntent(intent)方法
+//    //并在其中获取想要的值，否则会无法正确获取
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        super.onNewIntent(intent);
+//        setIntent(intent);
+//    }
 }

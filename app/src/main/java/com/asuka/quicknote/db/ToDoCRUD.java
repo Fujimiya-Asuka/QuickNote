@@ -4,8 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.asuka.quicknote.myClass.Time;
 import com.asuka.quicknote.myClass.ToDo;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ToDoCRUD {
@@ -18,7 +21,7 @@ public class ToDoCRUD {
         databaseHelper = new DatabaseHelper(context);
     }
 
-    //添加待办
+
     public long addTodo(String title,String time){
         db = databaseHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -100,12 +103,22 @@ public class ToDoCRUD {
             long todoId = cursor.getInt(cursor.getColumnIndex("id"));
             String title = cursor.getString(cursor.getColumnIndex("title"));
             String time = cursor.getString(cursor.getColumnIndex("time"));
-            int isDone = cursor.getInt(cursor.getColumnIndex("time"));
+            int isDone = cursor.getInt(cursor.getColumnIndex("isDone"));
             todoList.add(new ToDo(todoId,title,time,isDone));
         }
         cursor.close();
         db.close();
         return todoList;
+    }
+
+    //设置待办是否完成
+    public void setToDoIsDone(long toDoId,int isDone){
+        db = databaseHelper.getWritableDatabase();
+        db.execSQL("UPDATE "+table+" SET isDone =? WHERE id = ?",new String[]{""+isDone,""+toDoId});
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put("isDone",isDone);
+//        db.update(table,contentValues,"id=?",new String[]{""+toDoId});
+        db.close();
     }
 
     //关闭数据库

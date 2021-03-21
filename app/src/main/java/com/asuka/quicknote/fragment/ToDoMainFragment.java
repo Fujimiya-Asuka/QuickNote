@@ -6,22 +6,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.activity.MainActivity;
-import com.asuka.quicknote.adapter.NoteRecyclerViewAdapter;
 import com.asuka.quicknote.adapter.ToDoRecycleViewAdapter;
-import com.asuka.quicknote.db.NoteCRUD;
 import com.asuka.quicknote.db.ToDoCRUD;
-import com.asuka.quicknote.myClass.Note;
 import com.asuka.quicknote.myClass.ToDo;
 
 import java.util.List;
@@ -111,7 +105,7 @@ public class ToDoMainFragment extends Fragment {
         Log.d(TAG,TAG+"onResume");
         super.onResume();
         MainActivity mainActivity = (MainActivity) requireActivity();
-        mainActivity.setFragmentId(2);//记录当前Fragment返回给Activity
+        mainActivity.setFragmentId(1);//记录当前Fragment返回给Activity
     }
 
 

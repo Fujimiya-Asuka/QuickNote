@@ -34,7 +34,7 @@
                     android:layout_height="match_parent"
                     tools:layout_editor_absoluteX="16dp">
 
-                    <!--                    头像-->
+                    <!--头像-->
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/circleImageView_main"
                         android:layout_width="42dp"
@@ -42,7 +42,7 @@
                         android:layout_centerVertical="true"
                         android:src="@drawable/genshin" />
 
-                    <!--                    搜索框-->
+                    <!--搜索框-->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cardView_main"
                         android:layout_width="match_parent"
@@ -82,7 +82,7 @@
                     android:id="@+id/tabItemNote_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="笔记" />
+                    android:text="便签" />
 
                 <com.google.android.material.tabs.TabItem
                     android:id="@+id/tabItemToDo_main"

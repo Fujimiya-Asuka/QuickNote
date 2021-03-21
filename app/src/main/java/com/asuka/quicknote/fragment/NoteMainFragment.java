@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -110,6 +111,10 @@ public class NoteMainFragment extends Fragment {
         recyclerView = fragmentActivity.findViewById(R.id.noteRecycleView_main);
         noteRecyclerViewAdapter = new NoteRecyclerViewAdapter();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(fragmentActivity);
+
+        //瀑布流预留
+//      RecyclerView.LayoutManager layoutManager = new GridLayoutManager(fragmentActivity,2);
+
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(noteRecyclerViewAdapter);
         NoteCRUD noteCRUD = new NoteCRUD(this.fragmentActivity);
@@ -133,7 +138,7 @@ public class NoteMainFragment extends Fragment {
         Log.d(TAG,TAG+"onResume");
 
         MainActivity mainActivity = (MainActivity) requireActivity();
-        mainActivity.setFragmentId(1);//记录当前Fragment返回给Activity
+        mainActivity.setFragmentId(0);//记录当前Fragment返回给Activity
 
 
 //        noteRecyclerViewAdapter.notifyDataSetChanged(); //告诉适配器数据已经发生变化

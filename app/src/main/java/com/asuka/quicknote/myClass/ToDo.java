@@ -40,11 +40,11 @@ public class ToDo {
         this.time = time;
     }
 
-    public int isDone() {
+    public int getIsDone() {
         return isDone;
     }
 
-    public void setDone(int done) {
+    public void setIsDone(int done) {
         isDone = done;
     }
 }

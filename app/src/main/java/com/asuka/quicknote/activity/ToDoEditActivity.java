@@ -1,5 +1,6 @@
 package com.asuka.quicknote.activity;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -7,6 +8,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,14 +18,19 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 
 import com.asuka.quicknote.R;
+import com.asuka.quicknote.db.ToDoCRUD;
+import com.asuka.quicknote.myClass.Time;
+import com.asuka.quicknote.myClass.ToDo;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class ToDoEditActivity extends AppCompatActivity {
     private final Context mContext = ToDoEditActivity.this;
     private final String TAG = "ToDoEditActivity";
     private Toolbar toolbar;
     private EditText toDoTileEdit,toDoDataEdit;
+    private ToDoCRUD toDoCRUD = new ToDoCRUD(mContext);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +38,24 @@ public class ToDoEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_todo_edit);
         toolbar = findViewById(R.id.toolbar_ToDoEdit);
         setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar!=null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        }
         toDoTileEdit = findViewById(R.id.todo_title_edit);
         toDoDataEdit = findViewById(R.id.todo_data_edit);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        long todoID =getIntent().getLongExtra("todoID", -1);
+        Log.d(TAG, "onResume: "+todoID);
+        if (todoID!=-1){
+            ToDo todo = toDoCRUD.getTodo(todoID);
+            toDoTileEdit.setText(todo.getTitle());
+        }
     }
 
     @Override
@@ -44,8 +67,13 @@ public class ToDoEditActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
+            //返回按钮
+            case android.R.id.home :
+                returnMainActivity();
+            //提交按钮
             case R.id.submitBtn_toDoToolbar:
-                Log.d(TAG, "onOptionsItemSelected: ");
+                toDoCRUD.addTodo(toDoTileEdit.getText().toString(),new Time(new Date()).getTime());
+                returnMainActivity();
                 break;
             case R.id.setNotify_toDoToolbar:
                 Log.d(TAG, "onOptionsItemSelected: ");
@@ -92,5 +120,16 @@ public class ToDoEditActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        returnMainActivity();
+    }
+
+    private void returnMainActivity(){
+        Intent intent = new Intent(mContext,MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

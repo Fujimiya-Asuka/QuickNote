@@ -54,7 +54,7 @@ public class NoteCRUD {
     }
 
     //删除指定笔记
-    public void removeNote(long note_id){
+    public void deleteNote(long note_id){
         db = noteDatabaseHelper.getWritableDatabase();
         db.delete(table,"id=?",new String[]{""+note_id});
         db.close();

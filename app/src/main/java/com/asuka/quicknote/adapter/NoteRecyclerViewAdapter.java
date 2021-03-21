@@ -29,14 +29,25 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter <NoteRecyclerV
         this.noteList = noteList;
     }
 
+    public void setUesCardView(boolean uesCardView) {
+        isUesCardView = uesCardView;
+    }
+
     @NonNull
     @Override
     public NoteRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: NoteRecyclerViewAdapter");
-        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item_list,parent,false);
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        View view;
+
+        if (isUesCardView==true){
+            view = layoutInflater.inflate(R.layout.note_item_card,parent,false);
+        }else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item_list,parent,false);
+        }
+
         final ViewHolder holder = new ViewHolder(view);
         noteCRUD = new NoteCRUD(parent.getContext());
-
         //添加右滑动
         holder.swipeLayout.addDrag(SwipeLayout.DragEdge.Left,holder.swipeLayout.findViewById(R.id.bottom_wrapper));
         //关闭向右滑动
@@ -62,7 +73,7 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter <NoteRecyclerV
                 Note note = noteList.get(position);
                 long id = note.getId();
                 NoteCRUD noteCRUD = new NoteCRUD(v.getContext());
-                noteCRUD.removeNote(id);
+                noteCRUD.deleteNote(id);
                 LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(v.getContext());
                 Intent intent = new Intent("com.asuka.quicknote.activity.DELETE_THIS_NOTE");
                 localBroadcastManager.sendBroadcast(intent);
@@ -95,8 +106,6 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter <NoteRecyclerV
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            noteView = itemView;
-
             swipeLayout = itemView.findViewById(R.id.swipeLayout_note);
             swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
             noteView = itemView.findViewById(R.id.note_view);
