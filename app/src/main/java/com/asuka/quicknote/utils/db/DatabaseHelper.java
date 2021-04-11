@@ -1,4 +1,4 @@
-package com.asuka.quicknote.db;
+package com.asuka.quicknote.utils.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

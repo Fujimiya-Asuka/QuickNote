@@ -8,13 +8,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,10 +26,9 @@ import android.widget.Toast;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.activity.MainActivity;
 import com.asuka.quicknote.adapter.NoteRecyclerViewAdapter;
-import com.asuka.quicknote.db.NoteCRUD;
-import com.asuka.quicknote.myClass.Note;
+import com.asuka.quicknote.utils.db.NoteCRUD;
+import com.asuka.quicknote.domain.Note;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -52,7 +49,7 @@ public class NoteMainFragment extends Fragment {
     private NoteRecyclerViewAdapter noteRecyclerViewAdapter;
     private SearchView searchView;
     private LocalBroadcastManager localBroadcastManager;
-    private DeleteThisNoteReceiver delete;
+    private DeleteThisNoteReceiver deleteThisNoteReceiver;
     private List<Note> allNotes;
 
     // TODO: Rename and change types of parameters
@@ -120,15 +117,13 @@ public class NoteMainFragment extends Fragment {
         NoteCRUD noteCRUD = new NoteCRUD(this.fragmentActivity);
         allNotes = noteCRUD.getAllNotes();
         noteRecyclerViewAdapter.setNoteList(allNotes);
-
         searchView = fragmentActivity.findViewById(R.id.searchView_main);
+        //注册本地广播
         localBroadcastManager = LocalBroadcastManager.getInstance(fragmentActivity);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.asuka.quicknote.activity.DELETE_THIS_NOTE");
-        delete = new DeleteThisNoteReceiver();
-        localBroadcastManager.registerReceiver(delete,intentFilter);
-
-
+        deleteThisNoteReceiver = new DeleteThisNoteReceiver();
+        localBroadcastManager.registerReceiver(deleteThisNoteReceiver,intentFilter);
 
     }
 
@@ -139,26 +134,26 @@ public class NoteMainFragment extends Fragment {
 
         MainActivity mainActivity = (MainActivity) requireActivity();
         mainActivity.setFragmentId(0);//记录当前Fragment返回给Activity
-
-
 //        noteRecyclerViewAdapter.notifyDataSetChanged(); //告诉适配器数据已经发生变化
 
         //搜索框
         searchView.setQueryHint("搜索笔记");//设置搜索提示
         searchView.setBackgroundColor(Color.TRANSPARENT);//设置下划线透明
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            //按下确定时提交
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
+            //搜索框数据发生变化时候提交
             @Override
             public boolean onQueryTextChange(String newText) {
-                NoteCRUD noteCRUD = new NoteCRUD(NoteMainFragment.this.fragmentActivity);
+                NoteCRUD noteCRUD = new NoteCRUD(fragmentActivity);
                 List<Note> notes = noteCRUD.searchNotes(newText.trim()); //trim()去除空格
                 noteRecyclerViewAdapter.setNoteList(notes);
                 noteRecyclerViewAdapter.notifyDataSetChanged();
                 if (notes.size() == 0) {
-                    Toast.makeText(NoteMainFragment.this.fragmentActivity, "没有数据啦，不要再找了", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(fragmentActivity, "没有数据啦，不要再找了", Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -169,7 +164,7 @@ public class NoteMainFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        localBroadcastManager.unregisterReceiver(delete);
+        localBroadcastManager.unregisterReceiver(deleteThisNoteReceiver);
     }
 //
 //    @Override

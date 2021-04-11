@@ -1,17 +1,15 @@
 package com.asuka.quicknote.fragment;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +17,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.asuka.quicknote.activity.MainActivity;
 import com.asuka.quicknote.R;
-import com.asuka.quicknote.db.AccountDatabaseHelper;
-import com.asuka.quicknote.db.NoteCRUD;
-import com.asuka.quicknote.db.ToDoCRUD;
-import com.asuka.quicknote.myClass.Time;
-import com.asuka.quicknote.myClass.ToDo;
+import com.asuka.quicknote.activity.MainActivity;
+import com.asuka.quicknote.domain.User;
+import com.asuka.quicknote.domain.ResponseResult;
+import com.asuka.quicknote.utils.db.NoteCRUD;
+import com.asuka.quicknote.utils.db.ToDoCRUD;
+import com.asuka.quicknote.domain.Time;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,6 +45,10 @@ import java.util.Date;
  * create an instance of this fragment.
  */
 public class SignInFragment extends Fragment {
+
+    private final String TAG = "SignInFragment";
+    private EditText username_Edit,password_Edit;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,63 +101,25 @@ public class SignInFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final AccountDatabaseHelper account_dbHelper;
         final FragmentActivity fragmentActivity = requireActivity();
 
-        Button login_btn = fragmentActivity.findViewById(R.id.sign_in_btn);
+        final Button login_btn = fragmentActivity.findViewById(R.id.sign_in_btn);
         //登录页面的账户输入框
-        final EditText account_Edit = fragmentActivity.findViewById(R.id.account_edit_sign_in);
+        username_Edit = fragmentActivity.findViewById(R.id.account_edit_sign_in);
         //登录页面的密码输入框
-        final EditText password_Edit = fragmentActivity.findViewById(R.id.password_edit_sign_in);
+        password_Edit = fragmentActivity.findViewById(R.id.password_edit_sign_in);
 
-        account_dbHelper = new AccountDatabaseHelper(fragmentActivity, "Account.db", null, 1);
 
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SQLiteDatabase db = account_dbHelper.getWritableDatabase();
-                String search = account_Edit.getText().toString();
-                String target = password_Edit.getText().toString();
+                String username = username_Edit.getText().toString();
+                String password = password_Edit.getText().toString();
 //                判断输入框是否为空
-                if ("".equals(search) || "".equals(target)) {
+                if ("".equals(username) || "".equals(password)) {
                     Toast.makeText(fragmentActivity, "账号密码不能为空", Toast.LENGTH_SHORT).show();
-                } else {
-                    @SuppressLint("Recycle") Cursor cursor = db.rawQuery("SELECT password FROM account WHERE account=?", new String[]{search});
-                    cursor.getCount();
-                    if (cursor.getCount() == 0) {
-                        Toast.makeText(fragmentActivity, "账号不存在", Toast.LENGTH_SHORT).show();
-                    } else {
-                        cursor.moveToNext();
-                        String account = cursor.getString(cursor.getColumnIndex("password"));
-                        if (account.equals(target)) {
-                            Toast.makeText(fragmentActivity, "登陆成功", Toast.LENGTH_SHORT).show();
-                            //利用SharedPreference将已经登录信息存储到config文件中
-                            SharedPreferences.Editor editor = fragmentActivity.getSharedPreferences("config", Context.MODE_PRIVATE).edit();
-                            editor.putInt("isLogin", 1);
-                            editor.apply();
-
-                            //测试代码
-                            NoteCRUD testCURD = new NoteCRUD(fragmentActivity);
-                            for (int i = 0; i < 2; i++) {
-                                initNotes(testCURD);
-                            }
-                            testCURD.closeDB();
-
-                            ToDoCRUD testToDoCRUD = new ToDoCRUD(fragmentActivity);
-                            for (int i = 0; i < 2; i++) {
-                                initToDo(testToDoCRUD);
-                            }
-                            testToDoCRUD.closeDB();
-
-                            Intent intent = new Intent(fragmentActivity, MainActivity.class);
-                            startActivity(intent);
-                            fragmentActivity.finish();
-                        } else {
-                            Toast.makeText(fragmentActivity, "密码错误", Toast.LENGTH_SHORT).show();
-                        }
-                        db.close();
-                    }
-
+                }else {
+                    login(username,password);
                 }
             }
         });
@@ -186,5 +162,78 @@ public class SignInFragment extends Fragment {
         final String title = "待办事项";
         toDoCRUD.addTodo(title,new Time(new Date()).getTime());
     }
+
+
+    //登录的方法
+    private void login(final String username, final String password){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "获取输入的用户名和密码："+username+"+"+password);
+                //创建客户端
+                OkHttpClient client = new OkHttpClient();
+                //根据用户输入的用户名和密码创建User对象并转换为json
+                String jsonStr = new Gson().toJson(new User(username,password));
+                //设置传输数据类型
+                MediaType mediaType = MediaType.parse("application/json");
+                //设置请求体
+                final RequestBody requestBody = RequestBody.create(mediaType,jsonStr);
+                Request request = new Request.Builder()
+                        .url("http://8.129.51.177:8080/QuickNoteServlet/login")
+                        .post(requestBody)
+                        .build();
+                //执行异步请求
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.d(TAG, "onFailure: "+e.toString());
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(requireActivity(),"网络连接失败",Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String responseBody = response.body().string();
+                        Log.d(TAG, "responseBody:"+responseBody);
+                        String jsonStr = "["+responseBody+"]";
+                        Log.d(TAG, "jsonStr:"+jsonStr);
+                        List<ResponseResult> responseResultsList = new Gson().fromJson(jsonStr, new TypeToken<List<ResponseResult>>(){}.getType());
+                        for (ResponseResult responseResult : responseResultsList) {
+                            Log.d(TAG, "onResponse: "+responseResult.getCode()+"="+responseResult.getMessage());
+                            //登录成功
+                            if (responseResult.getCode()==1){
+                                requireActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(requireActivity(), "登陆成功", Toast.LENGTH_SHORT).show();
+                                        //利用SharedPreference将已经登录信息存储到config文件中
+                                        SharedPreferences.Editor editor = requireActivity().getSharedPreferences("config", requireActivity().MODE_PRIVATE).edit();
+                                        editor.putInt("isLogin", 1);
+                                        editor.apply();
+                                        Intent intent = new Intent(requireActivity(), MainActivity.class);
+                                        startActivity(intent);
+                                        requireActivity().finish();
+                                    }
+                                });
+
+                            }else {
+                                requireActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(requireActivity(), "账户名或密码错误", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+        }).start();
+    }
+
 
 }

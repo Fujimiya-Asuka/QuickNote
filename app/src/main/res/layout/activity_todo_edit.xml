@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/toolbar_menu_todo_edit"
-        app:title="添加待办"
+        app:title="编辑待办"
         app:titleTextColor="#FFFFFF" />
 
     <LinearLayout

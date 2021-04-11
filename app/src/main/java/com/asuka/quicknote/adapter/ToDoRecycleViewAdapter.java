@@ -12,11 +12,12 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.activity.ToDoEditActivity;
-import com.asuka.quicknote.db.ToDoCRUD;
-import com.asuka.quicknote.myClass.ToDo;
+import com.asuka.quicknote.utils.db.ToDoCRUD;
+import com.asuka.quicknote.domain.ToDo;
 import com.daimajia.swipe.SwipeLayout;
 
 import java.util.ArrayList;
@@ -84,9 +85,9 @@ public class ToDoRecycleViewAdapter extends RecyclerView.Adapter <ToDoRecycleVie
                 long id = todo.getId();
                 ToDoCRUD toDoCRUD = new ToDoCRUD(v.getContext());
                 toDoCRUD.removeTodo(id);
-//                LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(v.getContext());
-//                Intent intent = new Intent("com.asuka.quicknote.activity.DELETE_THIS_NOTE");
-//                localBroadcastManager.sendBroadcast(intent);
+                LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(v.getContext());
+                Intent intent = new Intent("com.asuka.quicknote.activity.DELETE_THIS_TODO");
+                localBroadcastManager.sendBroadcast(intent);
             }
         });
 

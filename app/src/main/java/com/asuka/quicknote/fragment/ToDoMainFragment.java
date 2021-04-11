@@ -1,22 +1,30 @@
 package com.asuka.quicknote.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.activity.MainActivity;
 import com.asuka.quicknote.adapter.ToDoRecycleViewAdapter;
-import com.asuka.quicknote.db.ToDoCRUD;
-import com.asuka.quicknote.myClass.ToDo;
+import com.asuka.quicknote.utils.db.ToDoCRUD;
+import com.asuka.quicknote.domain.ToDo;
 
 import java.util.List;
 
@@ -28,6 +36,7 @@ import java.util.List;
 public class ToDoMainFragment extends Fragment {
 
     private final String TAG = "FragmentB: ";
+    private DeleteThisToDoReceiver deleteThisToDoReceiver;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,7 +47,6 @@ public class ToDoMainFragment extends Fragment {
     private RecyclerView recyclerView;
     private ToDoRecycleViewAdapter toDoRecycleViewAdapter;
     private SearchView searchView;
-    private List<ToDo> allToDo;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -89,15 +97,25 @@ public class ToDoMainFragment extends Fragment {
         Log.d(TAG,TAG+"onActivityCreated");
         super.onActivityCreated(savedInstanceState);
         fragmentActivity = requireActivity();
-
         recyclerView = fragmentActivity.findViewById(R.id.todoRecycleView_main);
+        searchView = fragmentActivity.findViewById(R.id.searchView_main);
+
+        //展示RecycleView数据
         toDoRecycleViewAdapter = new ToDoRecycleViewAdapter();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(fragmentActivity);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(toDoRecycleViewAdapter);
         ToDoCRUD toDoCRUD = new ToDoCRUD(this.fragmentActivity);
-        allToDo = toDoCRUD.getAllTodo();
-        toDoRecycleViewAdapter.setTodoList(allToDo);
+        toDoRecycleViewAdapter.setTodoList(toDoCRUD.getAllTodo());
+
+
+
+        //注册本地广播接收器(删除待办)
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(fragmentActivity);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.asuka.quicknote.activity.DELETE_THIS_TODO");
+        deleteThisToDoReceiver = new ToDoMainFragment.DeleteThisToDoReceiver();
+        localBroadcastManager.registerReceiver(deleteThisToDoReceiver,intentFilter);
     }
 
     @Override
@@ -106,7 +124,37 @@ public class ToDoMainFragment extends Fragment {
         super.onResume();
         MainActivity mainActivity = (MainActivity) requireActivity();
         mainActivity.setFragmentId(1);//记录当前Fragment返回给Activity
+
+        //搜索框
+        searchView.setQueryHint("搜索待办");//设置搜索提示
+        searchView.setBackgroundColor(Color.TRANSPARENT);//设置下划线透明
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                List<ToDo> toDoList = new ToDoCRUD(fragmentActivity).searchTodo(newText.trim());
+                toDoRecycleViewAdapter.setTodoList(toDoList);
+                toDoRecycleViewAdapter.notifyDataSetChanged();
+                if (toDoList.size() == 0) {
+                    Toast.makeText(fragmentActivity, "没有数据啦，不要再找了", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+        });
+
     }
 
+    //广播接收器，用来接收删除待办的广播，刷新RecycleView
+    class DeleteThisToDoReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            List<ToDo> allTodo = new ToDoCRUD(context).getAllTodo();
+            toDoRecycleViewAdapter.setTodoList(allTodo);
+            toDoRecycleViewAdapter.notifyDataSetChanged();
+        }
+    }
 
 }

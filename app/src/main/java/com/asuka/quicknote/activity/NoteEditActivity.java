@@ -15,9 +15,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.asuka.quicknote.R;
-import com.asuka.quicknote.db.NoteCRUD;
-import com.asuka.quicknote.db.DatabaseHelper;
-import com.asuka.quicknote.myClass.Time;
+import com.asuka.quicknote.utils.db.NoteCRUD;
+import com.asuka.quicknote.utils.db.DatabaseHelper;
+import com.asuka.quicknote.domain.Time;
 
 import java.util.Date;
 

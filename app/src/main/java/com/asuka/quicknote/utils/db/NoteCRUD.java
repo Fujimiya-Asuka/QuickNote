@@ -1,11 +1,11 @@
-package com.asuka.quicknote.db;
+package com.asuka.quicknote.utils.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.asuka.quicknote.myClass.Note;
+import com.asuka.quicknote.domain.Note;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/toolbar_menu_note_edit"
-        app:title="设置便签"
+        app:title="编辑便签"
         app:titleTextColor="#FFFFFF" />
 
     <LinearLayout

@@ -1,4 +1,4 @@
-package com.asuka.quicknote.myClass;
+package com.asuka.quicknote.domain;
 
 public class ToDo {
     private long id;

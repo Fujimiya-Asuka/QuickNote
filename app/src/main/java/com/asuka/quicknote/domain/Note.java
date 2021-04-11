@@ -1,4 +1,4 @@
-package com.asuka.quicknote.myClass;
+package com.asuka.quicknote.domain;
 
 public class Note {
     private long id;//主键

@@ -1,4 +1,4 @@
-package com.asuka.quicknote.myClass;
+package com.asuka.quicknote.domain;
 
 
 import java.text.SimpleDateFormat;

@@ -13,8 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.asuka.quicknote.R;
-import com.asuka.quicknote.myClass.Note;
-import com.asuka.quicknote.db.NoteCRUD;
+import com.asuka.quicknote.domain.Note;
+import com.asuka.quicknote.utils.db.NoteCRUD;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

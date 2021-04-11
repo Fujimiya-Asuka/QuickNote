@@ -12,8 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.asuka.quicknote.db.NoteCRUD;
-import com.asuka.quicknote.myClass.Note;
+import com.asuka.quicknote.utils.db.NoteCRUD;
+import com.asuka.quicknote.domain.Note;
 import com.asuka.quicknote.activity.NoteViewActivity;
 import com.asuka.quicknote.R;
 import com.daimajia.swipe.SwipeLayout;

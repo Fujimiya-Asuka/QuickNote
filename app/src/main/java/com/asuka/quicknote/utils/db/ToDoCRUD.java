@@ -1,14 +1,12 @@
-package com.asuka.quicknote.db;
+package com.asuka.quicknote.utils.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.asuka.quicknote.myClass.Time;
-import com.asuka.quicknote.myClass.ToDo;
+import com.asuka.quicknote.domain.ToDo;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ToDoCRUD {
@@ -21,7 +19,15 @@ public class ToDoCRUD {
         databaseHelper = new DatabaseHelper(context);
     }
 
-
+    /**
+     * 添加待办
+     * @param title
+     * 标题
+     * @param time
+     * 提醒时间
+     * @return
+     * //返回一个主键的值 todoID
+     */
     public long addTodo(String title,String time){
         db = databaseHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
