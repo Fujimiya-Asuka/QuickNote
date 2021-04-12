@@ -18,7 +18,7 @@ public  class  AlarmUtil {
      * 设置闹钟的日历，要先设置好时间
      */
     public static void setAlarm(Context context,int todoId,Calendar calendar){
-        Intent intent=new Intent(context, ToDoViewActivity.class);
+        Intent intent=new Intent(context, NotifyService.class);
         //todoId用于唯一标识定时任务,不可重复，否则定时任务将会被覆盖
         PendingIntent pendingIntent = PendingIntent.getActivity(context,todoId,intent,0);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

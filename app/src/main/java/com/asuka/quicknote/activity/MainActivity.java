@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.adapter.ViewPagerAdapter;
+import com.asuka.quicknote.utils.NotifyService;
 import com.asuka.quicknote.utils.db.NoteCRUD;
 import com.asuka.quicknote.domain.Time;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -63,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolBar_main);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false); //去掉toolbar的默认显示Title
+
+        //启动待办提醒服务
+        startService(new Intent(this, NotifyService.class));
 
 
         //主页头像的点击事件 打开侧滑抽屉
