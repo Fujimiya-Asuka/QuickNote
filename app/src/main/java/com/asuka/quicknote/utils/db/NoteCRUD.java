@@ -2,6 +2,7 @@ package com.asuka.quicknote.utils.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -12,31 +13,41 @@ import java.util.List;
 
 public class NoteCRUD {
 
-    private final String table = "NOTE";
+    private  String tableName = null;
     private DatabaseHelper noteDatabaseHelper;
     private SQLiteDatabase db;
 
+
     public NoteCRUD(Context context) {
+        this.tableName = context.getSharedPreferences("config", Context.MODE_PRIVATE).getString("note_tableName",null);
         noteDatabaseHelper = new DatabaseHelper(context);
     }
 
-    //添加笔记
+    /**
+     *
+     * @param title
+     * @param data
+     * @param time
+     * @return
+     */
     public long addNote(String title, String data, String time){
         db = noteDatabaseHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("title",title);
         contentValues.put("data",data);
         contentValues.put("time",time);
-        long noteID = db.insert(table, null, contentValues); //insert()返回一个主键的值
+        long noteID = db.insert(tableName, null, contentValues); //insert()返回一个主键的值
         contentValues.clear();
+        db.close();
         return noteID;
+
     }
 
     //查找笔记，模糊匹配
     public List<Note> searchNotes(String s){
         db = noteDatabaseHelper.getWritableDatabase();
         List<Note> NoteList = new ArrayList<>();
-        final String s1 = "SELECT * FROM NOTE WHERE";
+        final String s1 = "SELECT * FROM "+tableName+" WHERE";
         final String s2 = " title LIKE "+ "'%" + s + "%'";
         final String s3 = " OR data LIKE "+ "'%" + s + "%'";
         Cursor cursor = db.rawQuery(s1+s2+s3,null);//将查询到的数据库信息以ID列表倒序排列
@@ -56,14 +67,14 @@ public class NoteCRUD {
     //删除指定笔记
     public void deleteNote(long note_id){
         db = noteDatabaseHelper.getWritableDatabase();
-        db.delete(table,"id=?",new String[]{""+note_id});
+        db.delete(tableName,"id=?",new String[]{""+note_id});
         db.close();
     }
 
     //删除所有笔记
-    public void removeAllNotes(String table){
+    public void removeAllNote(){
         db = noteDatabaseHelper.getWritableDatabase();
-        db.delete(table,null,null);
+        db.delete(tableName,null,null);
         db.close();
     }
 
@@ -74,14 +85,14 @@ public class NoteCRUD {
         contentValues.put("title",newTitle);
         contentValues.put("data",newData);
         contentValues.put("time",newTime);
-        db.update(table,contentValues,"id=?",new String[]{""+note_id});
+        db.update(tableName,contentValues,"id=?",new String[]{""+note_id});
         db.close();
     }
 
     //获取单个笔记，返回note对象
     public Note getNote(long note_id){
         db = noteDatabaseHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM NOTE WHERE id=? ", new String[]{"" + note_id});
+        Cursor cursor = db.rawQuery("SELECT * FROM "+tableName+" WHERE id=? ", new String[]{"" + note_id});
         Note note = new Note();
         while (cursor.moveToNext()){
             String title = cursor.getString(cursor.getColumnIndex("title"));
@@ -98,7 +109,7 @@ public class NoteCRUD {
     public List<Note> getAllNotes(){
         db = noteDatabaseHelper.getWritableDatabase();
         List<Note> NoteList = new ArrayList<>(50);
-        Cursor cursor = db.rawQuery("SELECT * FROM NOTE ORDER BY ID DESC",null);//将查询到的数据库信息以ID列表倒序排列
+        Cursor cursor = db.rawQuery("SELECT * FROM "+tableName+" ORDER BY ID DESC",null);//将查询到的数据库信息以ID列表倒序排列
         while (cursor.moveToNext()){
             String title = cursor.getString(cursor.getColumnIndex("title"));
             String data = cursor.getString(cursor.getColumnIndex("data"));
@@ -113,7 +124,7 @@ public class NoteCRUD {
 
     //关闭数据库
     public void closeDB(){
-        db.close();
+        noteDatabaseHelper.close();
     }
 
 }

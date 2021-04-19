@@ -139,7 +139,7 @@ public class RegisterFragment extends Fragment {
                 //设置请求体
                 final RequestBody requestBody = RequestBody.create(mediaType,jsonStr);
                 Request request = new Request.Builder()
-                        .url("http://192.168.31.216:8080/QuickNoteServlet/register")
+                        .url("http://8.129.51.177:8080/QuickNoteServlet/register")
                         .post(requestBody)
                         .build();
                 //执行异步请求

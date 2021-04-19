@@ -104,7 +104,6 @@ public class NoteMainFragment extends Fragment {
         fragmentActivity = requireActivity();
 //        requireActivity()调用的就是getActivity(),返回与此Fragment绑定的Activity，但是避免了返回null？
 //        requireContext() getContext() 同理？
-
         recyclerView = fragmentActivity.findViewById(R.id.noteRecycleView_main);
         noteRecyclerViewAdapter = new NoteRecyclerViewAdapter();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(fragmentActivity);

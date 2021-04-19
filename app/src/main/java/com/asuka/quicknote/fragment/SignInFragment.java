@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +22,7 @@ import com.asuka.quicknote.domain.User;
 import com.asuka.quicknote.domain.ResponseResult;
 import com.asuka.quicknote.utils.db.NoteCRUD;
 import com.asuka.quicknote.utils.db.ToDoCRUD;
-import com.asuka.quicknote.domain.Time;
+import com.asuka.quicknote.utils.TimeUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -113,6 +112,7 @@ public class SignInFragment extends Fragment {
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //获取输入框的账户和密码
                 String username = username_Edit.getText().toString();
                 String password = password_Edit.getText().toString();
 //                判断输入框是否为空
@@ -153,18 +153,23 @@ public class SignInFragment extends Fragment {
                 "雨是最能渲染情绪的，不同的人听雨，就能听出不一样的感觉。不同的心境，感受也就各异。" +
                 "心情好的人，听出了欢喜，细品出了轻快；忧伤的人，听出了忧愁，浅尝出了失落，寂寞。" +
                 "而纵观古今，很多文人墨客都喜欢借雨抒发情怀，吟唱心灵之歌。";
-        noteCRUD.addNote(title1,data1,new Time(new Date()).getTime());
-        noteCRUD.addNote(title2,data2,new Time(new Date()).getTime());
-        noteCRUD.addNote(title3,data3,new Time(new Date()).getTime());
+        noteCRUD.addNote(title1,data1,new TimeUtil(new Date()).getTimeString());
+        noteCRUD.addNote(title2,data2,new TimeUtil(new Date()).getTimeString());
+        noteCRUD.addNote(title3,data3,new TimeUtil(new Date()).getTimeString());
     }
 
     private void initToDo(ToDoCRUD toDoCRUD){
         final String title = "待办事项";
-        toDoCRUD.addTodo(title,new Time(new Date()).getTime());
+        toDoCRUD.addTodo(title,new TimeUtil(new Date()).getTimeString(),-1);
     }
 
-
-    //登录的方法
+    /**
+     * 登录的方法
+     * @param username
+     * 用户名
+     * @param password
+     * 密码
+     */
     private void login(final String username, final String password){
         new Thread(new Runnable() {
             @Override
@@ -184,6 +189,7 @@ public class SignInFragment extends Fragment {
                         .build();
                 //执行异步请求
                 client.newCall(request).enqueue(new Callback() {
+
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.d(TAG, "onFailure: "+e.toString());
@@ -213,6 +219,9 @@ public class SignInFragment extends Fragment {
                                         //利用SharedPreference将已经登录信息存储到config文件中
                                         SharedPreferences.Editor editor = requireActivity().getSharedPreferences("config", requireActivity().MODE_PRIVATE).edit();
                                         editor.putInt("isLogin", 1);
+                                        editor.putString("user",username);
+                                        editor.putString("note_tableName","note_"+username);
+                                        editor.putString("todo_tableName","todo_"+username);
                                         editor.apply();
                                         Intent intent = new Intent(requireActivity(), MainActivity.class);
                                         startActivity(intent);

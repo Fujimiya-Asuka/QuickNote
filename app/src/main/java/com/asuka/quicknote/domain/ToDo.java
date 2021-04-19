@@ -4,16 +4,16 @@ public class ToDo {
     private long id;
     private String title;
     private String time;
-    private int isDone;
+    private int notify;
 
     public ToDo() {
     }
 
-    public ToDo(long id, String title, String time, int isDone) {
+    public ToDo(long id, String title, String time, int notify) {
         this.id = id;
         this.title = title;
         this.time = time;
-        this.isDone = isDone;
+        this.notify = notify;
     }
 
     public long getId() {
@@ -40,11 +40,11 @@ public class ToDo {
         this.time = time;
     }
 
-    public int getIsDone() {
-        return isDone;
+    public int getNotify() {
+        return notify;
     }
 
-    public void setIsDone(int done) {
-        isDone = done;
+    public void setNotify(int done) {
+        notify = done;
     }
 }

@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/AAA"
-        android:icon="@drawable/ic_baseline_dashboard_24"
+        android:icon="@drawable/ic_baseline_refresh_24"
         android:title="测试按钮"
         app:showAsAction="always" />
     <item

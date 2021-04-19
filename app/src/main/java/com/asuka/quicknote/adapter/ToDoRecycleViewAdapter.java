@@ -54,6 +54,10 @@ public class ToDoRecycleViewAdapter extends RecyclerView.Adapter <ToDoRecycleVie
             }
         });
 
+        /**
+         * todo展示Item中的CheckBox
+         * 修改其状态是否完成
+         */
         holder.toDoCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @SuppressLint("ResourceAsColor")
             @Override
@@ -64,14 +68,14 @@ public class ToDoRecycleViewAdapter extends RecyclerView.Adapter <ToDoRecycleVie
                     int position = holder.getAdapterPosition();
                     ToDo todo = todoList.get(position);
                     long id = todo.getId();
-                    todoCRUD.setToDoIsDone(id,1);
+                    todoCRUD.setToDoNotify(id,0);
                 }else {
                     holder.todo_title.setPaintFlags(holder.todo_title.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     holder.todo_title.setTextColor(buttonView.getResources().getColor(R.color.blackTextColor));
                     int position = holder.getAdapterPosition();
                     ToDo todo = todoList.get(position);
                     long id = todo.getId();
-                    todoCRUD.setToDoIsDone(id,0);
+                    todoCRUD.setToDoNotify(id,1);
                 }
             }
         });
@@ -100,9 +104,9 @@ public class ToDoRecycleViewAdapter extends RecyclerView.Adapter <ToDoRecycleVie
         final ToDo todo = todoList.get(position);
         holder.todo_title.setText(todo.getTitle());
         holder.todo_time.setText(todo.getTime());
-        int isDone = todo.getIsDone();
+        int isDone = todo.getNotify();
         //如果该待办是已经完成的待办
-        if (isDone==1){
+        if (isDone==0){
             holder.toDoCheckBox.setChecked(true);
             holder.todo_title.setTextColor(holder.todo_title.getResources().getColor(R.color.hitTextColor));
         }

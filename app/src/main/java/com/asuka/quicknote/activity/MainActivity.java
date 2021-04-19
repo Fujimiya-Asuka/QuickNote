@@ -12,18 +12,22 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.adapter.ViewPagerAdapter;
 import com.asuka.quicknote.utils.NotifyService;
+import com.asuka.quicknote.utils.db.DatabaseHelper;
 import com.asuka.quicknote.utils.db.NoteCRUD;
-import com.asuka.quicknote.domain.Time;
+import com.asuka.quicknote.utils.TimeUtil;
+import com.asuka.quicknote.utils.db.ToDoCRUD;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -86,38 +90,44 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //在便签页 跳转到笔记编辑界面
                 if(fragmentId==0){
-                    startActivity(new Intent(MainActivity.this, NoteEditActivity.class));
+                    startActivity(new Intent(mContext, NoteEditActivity.class));
                 }
                 //在待办页
                 else if(fragmentId==1){
-                    startActivity(new Intent(MainActivity.this, ToDoEditActivity.class));
+                    startActivity(new Intent(mContext, ToDoEditActivity.class));
                 }
             }
         });
 
-        //侧滑抽屉NavigationView里Item的点击事件
+
         NavigationView navigationView = findViewById(R.id.navigation_view_main);
+        //headerLayout的用户名TextView
+        TextView nv = navigationView.getHeaderView(0).findViewById(R.id.nv_username);
+        nv.setText(getSharedPreferences("config",MODE_PRIVATE).getString("user","userName"));
+        //侧滑抽屉NavigationView里Item的点击事件
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_AAA:
-                        Toast.makeText(MainActivity.this, "点击AAA", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "点击AAA", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawers(); //关闭侧滑抽屉
                         break;
                     case R.id.nav_BBB:
-                        Toast.makeText(MainActivity.this, "点击BBB", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "点击BBB", Toast.LENGTH_SHORT).show();
                         drawerLayout.closeDrawers();
                         break;
                     case R.id.nav_CCC:
-                        Toast.makeText(MainActivity.this, "注销登录", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "注销登录", Toast.LENGTH_SHORT).show();
+                        new DatabaseHelper(mContext).deleteDataBase();
                         //修改登录信息
-                        //利用SharedPreference将登录信息存储到config文件中
-                        SharedPreferences.Editor editor = MainActivity.this.getSharedPreferences("config", Context.MODE_PRIVATE).edit();
-                        editor.putInt("isLogin", 0);
+                        SharedPreferences.Editor editor = mContext.getSharedPreferences("config", Context.MODE_PRIVATE).edit();
+                        editor.remove("isLogin");
+                        editor.remove("note_tableName");
+                        editor.remove("todo_tableName");
                         editor.apply();
                         finish();
-                        startActivity(new Intent(MainActivity.this,LauncherActivity.class));
+                        startActivity(new Intent(mContext,LauncherActivity.class));
                         break;
                 }
                 return true;
@@ -138,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.AAA:
-                NoteCRUD noteCRUD = new NoteCRUD(MainActivity.this);
+                NoteCRUD noteCRUD = new NoteCRUD(mContext);
                 String title = "听雨";
                 String data ="那一刻，我的心情随着雨声沸腾着，一些旧时光里的人或者事，就像雨珠一样飘飞，穿过时光，" +
                         "越过天涯，轻轻地落在心上，溅起一层层涟漪。而在这涟漪的波光里，仿佛一切都生动起来，鲜活起来。若雨，" +
@@ -146,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                         "雨是最能渲染情绪的，不同的人听雨，就能听出不一样的感觉。不同的心境，感受也就各异。" +
                         "心情好的人，听出了欢喜，细品出了轻快；忧伤的人，听出了忧愁，浅尝出了失落，寂寞。" +
                         "而纵观古今，很多文人墨客都喜欢借雨抒发情怀，吟唱心灵之歌。";
-                String time = new Time(new Date()).getTime();
+                String time = new TimeUtil(new Date()).getTimeString();
                 noteCRUD.addNote(title,data,time);
                 noteCRUD.closeDB();
                 onResume();
@@ -159,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            new NoteCRUD(MainActivity.this).removeAllNotes("NOTE");
+                            new NoteCRUD(mContext).removeAllNote();
                             onResume();
                         }
                     });
@@ -178,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            new NoteCRUD(MainActivity.this).removeAllNotes("TODO");
+                            new ToDoCRUD(mContext).removeAllTodo();
                             onResume();
                         }
                     });
@@ -251,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        new DatabaseHelper(mContext).close();
         Log.d(TAG, "onDestroy");
     }
 
