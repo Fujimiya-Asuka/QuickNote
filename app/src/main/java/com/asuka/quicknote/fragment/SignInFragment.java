@@ -182,7 +182,7 @@ public class SignInFragment extends Fragment {
                 //设置传输数据类型
                 MediaType mediaType = MediaType.parse("application/json");
                 //设置请求体
-                final RequestBody requestBody = RequestBody.create(mediaType,jsonStr);
+                RequestBody requestBody = RequestBody.create(mediaType,jsonStr);
                 Request request = new Request.Builder()
                         .url("http://8.129.51.177:8080/QuickNoteServlet/login")
                         .post(requestBody)

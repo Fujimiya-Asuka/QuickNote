@@ -25,6 +25,7 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter <NoteRecyclerV
     private boolean isUesCardView;
     NoteCRUD noteCRUD;
     List<Note> noteList = new ArrayList<>(50);
+
     public void setNoteList(List<Note> noteList) {
         this.noteList = noteList;
     }
@@ -39,11 +40,10 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter <NoteRecyclerV
         Log.d(TAG, "onCreateViewHolder: NoteRecyclerViewAdapter");
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View view;
-
         if (isUesCardView==true){
             view = layoutInflater.inflate(R.layout.note_item_card,parent,false);
         }else {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item_list,parent,false);
+            view = layoutInflater.inflate(R.layout.note_item_list,parent,false);
         }
 
         final ViewHolder holder = new ViewHolder(view);

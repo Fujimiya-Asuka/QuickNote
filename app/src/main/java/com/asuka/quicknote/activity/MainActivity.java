@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.adapter.ViewPagerAdapter;
+import com.asuka.quicknote.domain.ToDo;
 import com.asuka.quicknote.utils.NotifyService;
 import com.asuka.quicknote.utils.db.DatabaseHelper;
 import com.asuka.quicknote.utils.db.NoteCRUD;
@@ -32,10 +33,23 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.gson.Gson;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttp;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -148,18 +162,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.AAA:
-                NoteCRUD noteCRUD = new NoteCRUD(mContext);
-                String title = "听雨";
-                String data ="那一刻，我的心情随着雨声沸腾着，一些旧时光里的人或者事，就像雨珠一样飘飞，穿过时光，" +
-                        "越过天涯，轻轻地落在心上，溅起一层层涟漪。而在这涟漪的波光里，仿佛一切都生动起来，鲜活起来。若雨，" +
-                        "丝丝缠绵，滴滴惊心。真是应了宋代词人蒋捷那句词：“悲欢离合总无情，一任阶前点滴到天明" +
-                        "雨是最能渲染情绪的，不同的人听雨，就能听出不一样的感觉。不同的心境，感受也就各异。" +
-                        "心情好的人，听出了欢喜，细品出了轻快；忧伤的人，听出了忧愁，浅尝出了失落，寂寞。" +
-                        "而纵观古今，很多文人墨客都喜欢借雨抒发情怀，吟唱心灵之歌。";
-                String time = new TimeUtil(new Date()).getTimeString();
-                noteCRUD.addNote(title,data,time);
-                noteCRUD.closeDB();
-                onResume();
+                List<ToDo> allNotSyncTodo = new ToDoCRUD(mContext).getAllNotSyncTodo();
+
+                    syncTodo(allNotSyncTodo);
+
                 break;
 
             case R.id.deleteTable:
@@ -205,6 +211,34 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    private void syncTodo(final List<ToDo> toDoList) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+                MediaType mediaType = MediaType.parse("application/json");
+                String s = new Gson().toJson(toDoList);
+                Log.d(TAG, "run: "+s);
+                RequestBody requestBody = RequestBody.create(mediaType, s);
+                Request request = new Request.Builder()
+                        .url("http://192.168.43.244:8080/QuickNoteServlet/SyncServlet")
+                        .post(requestBody)
+                        .build();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+                    }
+                });
+            }
+        }).start();
     }
 
     @Override

@@ -40,7 +40,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "id integer primary key autoincrement," +
                 "title text," +
                 "time text,"+
-                "notify integer)";
+                "notify integer," +
+                "state integer," +
+                "modify integer)";
         sqLiteDatabase.execSQL(CRATE_TODO);
     }
 
