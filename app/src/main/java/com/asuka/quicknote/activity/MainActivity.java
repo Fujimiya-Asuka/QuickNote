@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.adapter.ViewPagerAdapter;
+import com.asuka.quicknote.domain.ResponseSyncToDoMessage;
 import com.asuka.quicknote.domain.ToDo;
 import com.asuka.quicknote.utils.NotifyService;
 import com.asuka.quicknote.utils.db.DatabaseHelper;
@@ -38,6 +39,7 @@ import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +52,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -163,9 +166,15 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.AAA:
                 List<ToDo> allNotSyncTodo = new ToDoCRUD(mContext).getAllNotSyncTodo();
-
+                Log.d(TAG, "allNotSyncTodo.size: "+allNotSyncTodo.size());
+                //有未同步的待办才开启同步
+                if (allNotSyncTodo.size()>0){
                     syncTodo(allNotSyncTodo);
-
+                }
+//                                    new ToDoCRUD(mContext).updateToDoStateModify(
+//                                            3,
+//                                            2,
+//                                            1);
                 break;
 
             case R.id.deleteTable:
@@ -217,13 +226,13 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                OkHttpClient client = new OkHttpClient();
+                final OkHttpClient client = new OkHttpClient();
                 MediaType mediaType = MediaType.parse("application/json");
                 String s = new Gson().toJson(toDoList);
                 Log.d(TAG, "run: "+s);
                 RequestBody requestBody = RequestBody.create(mediaType, s);
                 Request request = new Request.Builder()
-                        .url("http://192.168.43.244:8080/QuickNoteServlet/SyncServlet")
+                        .url("http://192.168.137.1:8080/QuickNoteServlet/SyncServlet")
                         .post(requestBody)
                         .build();
                 client.newCall(request).enqueue(new Callback() {
@@ -234,7 +243,24 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
+                        String string = response.body().string();
+                        Log.d(TAG, "onResponse: "+string);
+                        ResponseSyncToDoMessage responseSyncToDoMessage = new Gson().fromJson(string, ResponseSyncToDoMessage.class);
+                        if (responseSyncToDoMessage!=null){
+                            Log.d(TAG, "onResponse: "+responseSyncToDoMessage.toString());
+                            int resultCode = responseSyncToDoMessage.getResultCode();
+                            switch (resultCode){
+                                case 1 :
+                                    Log.d(TAG, "switch:");
+                                    new ToDoCRUD(getBaseContext()).updateToDoStateModify(
+                                            responseSyncToDoMessage.getTodoID(),
+                                            2,
+                                            responseSyncToDoMessage.getModify());
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                     }
                 });
             }

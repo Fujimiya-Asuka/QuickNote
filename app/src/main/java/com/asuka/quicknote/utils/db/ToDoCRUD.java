@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import androidx.annotation.LongDef;
 
 import com.asuka.quicknote.domain.ToDo;
 import java.util.ArrayList;
@@ -11,6 +14,7 @@ import java.util.List;
 
 public class ToDoCRUD {
 
+    private final String TAG = "ToDoCRUD";
     private String tableName = null;
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase db;
@@ -186,10 +190,17 @@ public class ToDoCRUD {
 //        ContentValues contentValues = new ContentValues();
 //        contentValues.put("isDone",isDone);
 //        db.update(table,contentValues,"id=?",new String[]{""+toDoId});
-//        db.close();
+        db.close();
     }
 
 
+    /**
+     * 获取所有未同步的待办
+     * @Author:  XuZhenHui
+     * @Time:  2021/4/22 22:45
+     * @return
+     * 返回ToDo对象列表
+     */
     public List<ToDo> getAllNotSyncTodo() {
         List<ToDo> toDoList = new ArrayList<>();
         db = databaseHelper.getWritableDatabase();
@@ -201,7 +212,26 @@ public class ToDoCRUD {
             int notify = cursor.getInt(cursor.getColumnIndex("notify"));
             toDoList.add(new ToDo(id,title,time,notify));
         }
+        db.close();
         return toDoList;
+    }
+
+    /**
+     * 更新待办的State和modify
+     * @Author:  XuZhenHui
+     * @Time:  2021/4/22 22:59
+     * @param todoID
+     * 待办ID
+     * @param state
+     * 状态
+     * @param modify
+     * 时间戳
+     */
+    public void updateToDoStateModify(int todoID,int state,int modify){
+        Log.d(TAG, "updateToDoStateModify: "+todoID+state+modify);
+        db=databaseHelper.getWritableDatabase();
+        db.execSQL("UPDATE "+tableName+" SET state = ?,modify = ? WHERE id = ? ;",new String[]{""+state,""+modify,""+todoID});
+        db.close();
     }
 
 }
