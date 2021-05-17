@@ -14,10 +14,14 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.asuka.quicknote.R;
@@ -35,18 +39,19 @@ import java.util.List;
  */
 public class ToDoMainFragment extends Fragment {
 
-    private final String TAG = "FragmentB: ";
-    private DeleteThisToDoReceiver deleteThisToDoReceiver;
-
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private final String TAG = "FragmentB: ";
+
+    private DeleteThisToDoReceiver deleteThisToDoReceiver;
     private FragmentActivity fragmentActivity;
     private RecyclerView recyclerView;
     private ToDoRecycleViewAdapter toDoRecycleViewAdapter;
     private SearchView searchView;
+    private View syncBtn;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -99,6 +104,7 @@ public class ToDoMainFragment extends Fragment {
         fragmentActivity = requireActivity();
         recyclerView = fragmentActivity.findViewById(R.id.todoRecycleView_main);
         searchView = fragmentActivity.findViewById(R.id.searchView_main);
+//        syncBtn = fragmentActivity.findViewById(R.id.syncBtn);
 
         //展示RecycleView数据
         toDoRecycleViewAdapter = new ToDoRecycleViewAdapter();
@@ -107,8 +113,6 @@ public class ToDoMainFragment extends Fragment {
         recyclerView.setAdapter(toDoRecycleViewAdapter);
         ToDoCRUD toDoCRUD = new ToDoCRUD(this.fragmentActivity);
         toDoRecycleViewAdapter.setTodoList(toDoCRUD.getAllTodo());
-
-
 
         //注册本地广播接收器(删除待办)
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(fragmentActivity);
@@ -120,7 +124,7 @@ public class ToDoMainFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.d(TAG,TAG+"onResume");
+        Log.d(TAG,TAG+"onResume"+fragmentActivity);
         super.onResume();
         MainActivity mainActivity = (MainActivity) requireActivity();
         mainActivity.setFragmentId(1);//记录当前Fragment返回给Activity
@@ -156,5 +160,7 @@ public class ToDoMainFragment extends Fragment {
             toDoRecycleViewAdapter.notifyDataSetChanged();
         }
     }
+
+
 
 }

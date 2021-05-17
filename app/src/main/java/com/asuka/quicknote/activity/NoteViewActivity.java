@@ -7,31 +7,39 @@ import androidx.appcompat.widget.Toolbar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.domain.Note;
 import com.asuka.quicknote.utils.db.NoteCRUD;
+import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class NoteViewActivity extends AppCompatActivity {
-
+    private final String TAG = "NoteViewActivity";
     private Context mContent = NoteViewActivity.this;
+    private String user = null;
     private long noteID = 0;
     private Note note;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_view);
         Intent intent = getIntent();
+        user=getSharedPreferences("config",Context.MODE_PRIVATE).getString("user",null);
         Toolbar toolbar = findViewById(R.id.toolbar_note_view);
         CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.collapsingToolbar_note_view);
-        final ImageView imageView = findViewById(R.id.app_bar_image_note_view);
+        imageView = findViewById(R.id.app_bar_image_note_view);
+
+
         TextView textView = findViewById(R.id.note_view_edit);
         FloatingActionButton editBtn = findViewById(R.id.removeBtn_note_view);
 
@@ -60,6 +68,17 @@ public class NoteViewActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (noteID>0){
+            Log.d(TAG, "noteImage: "+note.getImage());
+            if ("1".equals(note.getImage())){
+                Glide.with(this).load("http://8.129.51.177:8080/QuickNoteServlet/image/"+user+"/"+noteID+".jpg").into(imageView);
+            }
+        }
     }
 
     //左上角返回按键

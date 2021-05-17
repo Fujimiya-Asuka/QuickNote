@@ -15,11 +15,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp">
+
         <EditText
             android:id="@+id/account_edit_resister"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="账号"
+            android:hint="账号(10位数字)"
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -27,11 +28,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
+
         <EditText
             android:id="@+id/password_edit_resister"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="密码"
+            android:hint="密码(8位数字)"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 

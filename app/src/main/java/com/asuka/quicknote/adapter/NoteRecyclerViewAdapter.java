@@ -12,13 +12,22 @@ import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.asuka.quicknote.utils.NetWorkUtil;
 import com.asuka.quicknote.utils.db.NoteCRUD;
 import com.asuka.quicknote.domain.Note;
 import com.asuka.quicknote.activity.NoteViewActivity;
 import com.asuka.quicknote.R;
 import com.daimajia.swipe.SwipeLayout;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class NoteRecyclerViewAdapter extends RecyclerView.Adapter <NoteRecyclerViewAdapter.ViewHolder>{
     private final String TAG = "NoteRecyclerViewAdapter";
@@ -74,6 +83,20 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter <NoteRecyclerV
                 long id = note.getId();
                 NoteCRUD noteCRUD = new NoteCRUD(v.getContext());
                 noteCRUD.deleteNote(id);
+
+                //发送网络请求删除便签
+                new NetWorkUtil(v.getContext().getApplicationContext()).deleteNote((int)id).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+                    }
+                });
+
                 LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(v.getContext());
                 Intent intent = new Intent("com.asuka.quicknote.activity.DELETE_THIS_NOTE");
                 localBroadcastManager.sendBroadcast(intent);

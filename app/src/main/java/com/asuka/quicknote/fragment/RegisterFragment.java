@@ -23,6 +23,7 @@ import com.asuka.quicknote.R;
 
 import com.asuka.quicknote.domain.ResponseResult;
 import com.asuka.quicknote.domain.User;
+import com.asuka.quicknote.utils.NetWorkUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -118,7 +119,10 @@ public class RegisterFragment extends Fragment {
                     Toast.makeText(fragmentActivity,"账号密码不能为空",Toast.LENGTH_SHORT ).show();
                 }else if (!password.equals(enter_password)){
                     Toast.makeText(fragmentActivity,"两次输入的密码不一样",Toast.LENGTH_SHORT).show();
-                }else{
+                }else if (username.length()!=10||password.length()!=8){
+                    Toast.makeText(fragmentActivity, "账号密码格式不对", Toast.LENGTH_SHORT).show();
+                }
+                else{
                     register(username,password);
                 }
             }
@@ -130,20 +134,20 @@ public class RegisterFragment extends Fragment {
             @Override
             public void run() {
                 Log.d(TAG, "获取输入的用户名和密码："+username+"+"+password);
-                //创建客户端
-                OkHttpClient client = new OkHttpClient();
-                //根据用户输入的用户名和密码创建User对象并转换为json
-                String jsonStr = new Gson().toJson(new User(username,password));
-                //设置传输数据类型
-                MediaType mediaType = MediaType.parse("application/json");
-                //设置请求体
-                final RequestBody requestBody = RequestBody.create(mediaType,jsonStr);
-                Request request = new Request.Builder()
-                        .url("http://8.129.51.177:8080/QuickNoteServlet/register")
-                        .post(requestBody)
-                        .build();
+//                //创建客户端
+//                OkHttpClient client = new OkHttpClient();
+//                //根据用户输入的用户名和密码创建User对象并转换为json
+//                String jsonStr = new Gson().toJson(new User(username,password));
+//                //设置传输数据类型
+//                MediaType mediaType = MediaType.parse("application/json");
+//                //设置请求体
+//                final RequestBody requestBody = RequestBody.create(mediaType,jsonStr);
+//                Request request = new Request.Builder()
+//                        .url("http://8.129.51.177:8080/QuickNoteServlet/register")
+//                        .post(requestBody)
+//                        .build();
                 //执行异步请求
-                client.newCall(request).enqueue(new Callback() {
+                new NetWorkUtil(getActivity().getApplicationContext()).register(username,password).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.d(TAG, "onFailure: "+e.toString());

@@ -16,12 +16,20 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.activity.ToDoEditActivity;
+import com.asuka.quicknote.utils.NetWorkUtil;
 import com.asuka.quicknote.utils.db.ToDoCRUD;
 import com.asuka.quicknote.domain.ToDo;
 import com.daimajia.swipe.SwipeLayout;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class ToDoRecycleViewAdapter extends RecyclerView.Adapter <ToDoRecycleViewAdapter.ViewHolder>{
     private final String TAG = "ToDoRecycleViewAdapter";
@@ -89,12 +97,25 @@ public class ToDoRecycleViewAdapter extends RecyclerView.Adapter <ToDoRecycleVie
                 long id = todo.getId();
                 ToDoCRUD toDoCRUD = new ToDoCRUD(v.getContext());
                 toDoCRUD.removeTodo(id);
+//                new ToDoCRUD(v.getContext()).setToDoState(todoList.get(position).getId(),-1);
+                Call call = new NetWorkUtil(v.getContext()).deleteToDo((int) id);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+                    }
+                });
+
                 LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(v.getContext());
                 Intent intent = new Intent("com.asuka.quicknote.activity.DELETE_THIS_TODO");
                 localBroadcastManager.sendBroadcast(intent);
             }
         });
-
         return holder;
     }
 

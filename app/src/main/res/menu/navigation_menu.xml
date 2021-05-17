@@ -3,12 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/nav_AAA"
-        android:title="1" />
+        android:id="@+id/nav_setting"
+        android:title="设置" />
     <item
-        android:id="@+id/nav_BBB"
-        android:title="2" />
-    <item
-        android:id="@+id/nav_CCC"
+        android:id="@+id/nav_signOut"
         android:title="注销登录" />
 </menu>

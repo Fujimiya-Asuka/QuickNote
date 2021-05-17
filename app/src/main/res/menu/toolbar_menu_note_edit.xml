@@ -3,6 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/chose_photoBtn_noteEdit"
+        android:icon="@drawable/ic_photo_black_24dp"
+        android:title="选择图片"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/delete_toolbarBtn_noteEdit"
         android:icon="@drawable/ic_baseline_delete_24"
         android:title="删除"

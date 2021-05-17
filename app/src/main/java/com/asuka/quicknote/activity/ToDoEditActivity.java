@@ -17,12 +17,20 @@ import android.widget.Toast;
 import com.asuka.quicknote.R;
 import com.asuka.quicknote.adapter.TimeSelectDialog;
 import com.asuka.quicknote.utils.AlarmUtil;
+import com.asuka.quicknote.utils.NetWorkUtil;
 import com.asuka.quicknote.utils.db.ToDoCRUD;
 import com.asuka.quicknote.utils.TimeUtil;
 import com.asuka.quicknote.domain.ToDo;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class ToDoEditActivity extends AppCompatActivity {
     private final Context mContext = ToDoEditActivity.this;
@@ -98,11 +106,44 @@ public class ToDoEditActivity extends AppCompatActivity {
                     //1.1.2检查到不为空，执行插入
                     else {
                         //不带设置提醒的插入
-                        int todoId = (int) new ToDoCRUD(mContext).addTodo(newToDoTitle, new TimeUtil(notifyTime).getTimeString(), todoNotify);
+                        final int todoId = (int) new ToDoCRUD(mContext).addTodoToLocal(newToDoTitle, new TimeUtil(notifyTime).getTimeString(), todoNotify);
                         //如果待办需要设置提醒，则立即为其设置提醒
                         if (todoNotify==1){
                             AlarmUtil.setAlarm(mContext,todoId,notifyTime);
                         }
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    new NetWorkUtil(mContext).addTodo(new ToDoCRUD(mContext).getTodo(todoId)).execute();
+//                                } catch (IOException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                        }).start()
+                        new NetWorkUtil(mContext).uploadTodo(new ToDoCRUD(mContext).getTodo(todoId)).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                            }
+
+                            @Override
+                            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                // todo 此处可能会获取不到信息，要try
+                                int resultCode = Integer.parseInt(response.header("resultCode"));
+                                int todoID = Integer.parseInt(response.header("todoID"));
+                                int modify = Integer.parseInt(response.header("modify"));
+                                Log.d(TAG, "resultCode："+resultCode);
+                                Log.d(TAG, "todoID："+todoID);
+                                Log.d(TAG, "modify："+modify);
+                                if (resultCode==1){
+                                    new ToDoCRUD(getApplicationContext()).updateToDoStateModify(todoID,2,modify);
+                                }
+
+//                                new ToDoCRUD(getApplicationContext()).updateToDoStateModify();
+                            }
+                        });
+
                         returnMainActivity();
                     }
                 }
@@ -117,8 +158,28 @@ public class ToDoEditActivity extends AppCompatActivity {
                             new ToDoCRUD(mContext).upDataTodo(todoID,newToDoTitle,newToDoTime,todoNotify);
                             AlarmUtil.setAlarm(mContext,(int) todoID,notifyTime);
                         }
+                        new NetWorkUtil(getApplicationContext()).uploadTodo(new ToDoCRUD(getApplicationContext()).getTodo(todoID)).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                            }
+
+                            @Override
+                            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                int resultCode = Integer.parseInt(response.header("resultCode"));
+                                int todoID = Integer.parseInt(response.header("todoID"));
+                                int modify = Integer.parseInt(response.header("modify"));
+                                Log.d(TAG, "resultCode："+resultCode);
+                                Log.d(TAG, "todoID："+todoID);
+                                Log.d(TAG, "modify："+modify);
+                                if (resultCode==1){
+                                    new ToDoCRUD(getApplicationContext()).updateToDoStateModify(todoID,2,modify);
+                                }
+                            }
+                        });
                         returnMainActivity();
                     }else {
+                        //内容无变化，直接返回
                         returnMainActivity();
                     }
                 }
@@ -171,27 +232,6 @@ public class ToDoEditActivity extends AppCompatActivity {
                 timeSelectDialog.dismiss();
             }
         });
-    }
-
-    /**
-     * 添加或者是修改待办
-     */
-    private void addToDo(String title,String time,int notify){
-        //如果待办是不存在的，执行添加操作
-        if (todoID==-1){
-            //如果需要提醒
-            if (todoNotify==1){
-                long todoID = new ToDoCRUD(mContext).addTodo(title,time,notify);
-            }
-            //否则不给此待办设置提醒
-            else {
-
-            }
-        }
-        //如果是已经存在的待办，执行更新操作
-        else {
-
-        }
     }
 
 }

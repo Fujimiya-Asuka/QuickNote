@@ -35,7 +35,7 @@ public class ToDoCRUD {
      *               1：待提醒
      * @return //返回一个主键的值 todoID
      */
-    public long addTodo(String title, String time, int notify) {
+    public long addTodoToLocal(String title, String time, int notify) {
         db = databaseHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("title", title);
@@ -48,7 +48,13 @@ public class ToDoCRUD {
         return todoID;
     }
 
-    //查找待办，模糊匹配
+    /**
+     * 查找待办，模糊匹配
+     * @Author:  XuZhenHui
+     * @Time:  2021/4/27 22:29
+     * @param s
+     * @return
+     */
     public List<ToDo> searchTodo(String s) {
         db = databaseHelper.getWritableDatabase();
         List<ToDo> todoList = new ArrayList<>(50);
@@ -111,20 +117,29 @@ public class ToDoCRUD {
 
     /**
      * <h1>获取指定ID的单个待办</h1>
-     * <h1>待办内仅含有标题和时间</h1>
      *
-     * @param todo_id 待办ID
-     * @return 返回待办对象
+     * @param todo_id
+     * 待办ID
+     * @return
+     * 返回待办对象
      */
     public ToDo getTodo(long todo_id) {
         db = databaseHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + tableName + " WHERE id=? ", new String[]{"" + todo_id});
         ToDo todo = new ToDo();
         while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndex("id"));
             String title = cursor.getString(cursor.getColumnIndex("title"));
             String time = cursor.getString(cursor.getColumnIndex("time"));
+            int notify = cursor.getInt(cursor.getColumnIndex("notify"));
+            int state = cursor.getInt(cursor.getColumnIndex("state"));
+            int modify = cursor.getInt(cursor.getColumnIndex("modify"));
+            todo.setId(id);
             todo.setTitle(title);
             todo.setTime(time);
+            todo.setNotify(notify);
+            todo.setState(state);
+            todo.setModify(modify);
         }
         cursor.close();
         db.close();
@@ -132,20 +147,21 @@ public class ToDoCRUD {
     }
 
     /**
-     * <h1>获取所有待办</h1>
-     *
+     * <h1>获取所有未删除的待办</h1>
      * @return 返回TodoList<ToDo>
      */
     public List<ToDo> getAllTodo() {
         db = databaseHelper.getWritableDatabase();
         List<ToDo> todoList = new ArrayList<>(50);
-        Cursor cursor = db.rawQuery("SELECT * FROM " + tableName + " ORDER BY ID DESC", null);//将查询到的数据库信息以ID列表倒序排列
+        Cursor cursor = db.rawQuery("SELECT * FROM " + tableName +" WHERE state>-1 ORDER BY ID DESC", null);//将查询到的数据库信息以ID列表倒序排列
         while (cursor.moveToNext()) {
             long todoId = cursor.getInt(cursor.getColumnIndex("id"));
             String title = cursor.getString(cursor.getColumnIndex("title"));
             String time = cursor.getString(cursor.getColumnIndex("time"));
             int notify = cursor.getInt(cursor.getColumnIndex("notify"));
-            todoList.add(new ToDo(todoId, title, time, notify));
+            int state = cursor.getInt(cursor.getColumnIndex("state"));
+            int modify = cursor.getInt(cursor.getColumnIndex("modify"));
+            todoList.add(new ToDo(todoId, title, time, notify,state,modify));
         }
         cursor.close();
         db.close();
@@ -176,8 +192,7 @@ public class ToDoCRUD {
 
 
     /**
-     * 设置待办的状态
-     *
+     * 设置待办的提醒状态
      * @param toDoId 待办ID
      * @param notify 状态/n
      *               -1：不提醒
@@ -186,10 +201,26 @@ public class ToDoCRUD {
      */
     public void setToDoNotify(long toDoId, int notify) {
         db = databaseHelper.getWritableDatabase();
-        db.execSQL("UPDATE " + tableName + " SET notify =? WHERE id = ?", new String[]{"" + notify, "" + toDoId});
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put("isDone",isDone);
-//        db.update(table,contentValues,"id=?",new String[]{""+toDoId});
+        db.execSQL("UPDATE " + tableName + " SET notify =?,state=? WHERE id = ?", new String[]{"" + notify,""+1,"" + toDoId});
+        db.close();
+    }
+
+    /**
+     * 设置待办的同步状态
+     * @Author:  XuZhenHui
+     * @Time:  2021/4/28 18:21
+     * @param toDoId
+     * 待办ID
+     * @param state
+     * 状态
+     *  -1 ：本地已删除
+     *   0  ：本地新增
+     *   1 ：本地修改
+     *   2 ：已同步
+     */
+    public void setToDoState(long toDoId, int state){
+        db = databaseHelper.getWritableDatabase();
+        db.execSQL("UPDATE " + tableName + " SET state =? WHERE id = ?", new String[]{"" + state, "" + toDoId});
         db.close();
     }
 
@@ -206,11 +237,13 @@ public class ToDoCRUD {
         db = databaseHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + tableName + " WHERE state<2", null);
         while (cursor.moveToNext()){
-            int id = cursor.getInt(cursor.getColumnIndex("id"));
+            long todoId = cursor.getInt(cursor.getColumnIndex("id"));
             String title = cursor.getString(cursor.getColumnIndex("title"));
             String time = cursor.getString(cursor.getColumnIndex("time"));
             int notify = cursor.getInt(cursor.getColumnIndex("notify"));
-            toDoList.add(new ToDo(id,title,time,notify));
+            int state = cursor.getInt(cursor.getColumnIndex("state"));
+            int modify = cursor.getInt(cursor.getColumnIndex("modify"));
+            toDoList.add(new ToDo(todoId, title, time, notify,state,modify));
         }
         db.close();
         return toDoList;
@@ -232,6 +265,55 @@ public class ToDoCRUD {
         db=databaseHelper.getWritableDatabase();
         db.execSQL("UPDATE "+tableName+" SET state = ?,modify = ? WHERE id = ? ;",new String[]{""+state,""+modify,""+todoID});
         db.close();
+    }
+
+
+    /**
+     * 把从网络上获取到的待办添加到本地数据库
+     * @Author:  XuZhenHui
+     * @Time:  2021/4/26 17:02
+     * @param toDoList
+     *待办的List对象
+     * @return
+     * 返回成功添加待办的数量，用来提示用户成功获取到了几条待办
+     */
+    public int addTodoToLocal(List<ToDo> toDoList) {
+        db = databaseHelper.getWritableDatabase();
+        int addCount = 0;
+        if (toDoList.size()>0){
+            for (ToDo toDo : toDoList) {
+                Log.d(TAG, "addTodo: "+toDo.toString());
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("id",toDo.getId());
+                contentValues.put("title", toDo.getTitle());
+                contentValues.put("time", toDo.getTime());
+                contentValues.put("notify", toDo.getNotify());
+                contentValues.put("state", 2);  //从网络上同步下来的待办，state为2：已同步
+                contentValues.put("modify", toDo.getModify());
+                db.insert(tableName, null, contentValues);
+                addCount++;
+                contentValues.clear();
+        }
+        }
+        db.close();
+        return addCount;
+    }
+
+    /**
+     * 获取本地最大待办时间戳
+     * @Author:  XuZhenHui
+     * @Time:  2021/4/27 18:31
+     * @return
+     */
+    public int getLocalToDoMaxModify(){
+        db = databaseHelper.getWritableDatabase();
+        int maxModify = 0;
+        Cursor cursor = db.rawQuery("SELECT MAX(modify) FROM "+tableName, null);
+        while (cursor.moveToNext()){
+            maxModify = cursor.getInt(0);
+        }
+        db.close();
+        return maxModify;
     }
 
 }

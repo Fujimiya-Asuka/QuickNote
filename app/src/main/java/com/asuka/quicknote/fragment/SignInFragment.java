@@ -20,6 +20,7 @@ import com.asuka.quicknote.R;
 import com.asuka.quicknote.activity.MainActivity;
 import com.asuka.quicknote.domain.User;
 import com.asuka.quicknote.domain.ResponseResult;
+import com.asuka.quicknote.utils.NetWorkUtil;
 import com.asuka.quicknote.utils.db.NoteCRUD;
 import com.asuka.quicknote.utils.db.ToDoCRUD;
 import com.asuka.quicknote.utils.TimeUtil;
@@ -126,43 +127,6 @@ public class SignInFragment extends Fragment {
 
     }
 
-    private void initNotes(NoteCRUD noteCRUD){
-        //测试代码：
-        final String title1 = "冰灯";
-        final String data1 = "冰灯是流行于中国北方的一种古老的民间艺术形式。因为独特的地域优势，黑龙江可以说是制作冰灯最早的地方。" +
-                "传说在很早以前，每到冬季的夜晚，在松嫩平原上，人们总会看到三五成群的农夫和渔民在悠然自得地喂马和" +
-                "捕鱼，他们所使用的照明工具就是用冰做成的灯笼。这便是最早的冰灯。当时制作冰灯的工艺也很简单，" +
-                "把水放进木桶里冻成冰坨，凿出空心，放个油灯在里面，用以照明，冰罩挡住了凛冽的寒风，黑夜里便有了" +
-                "不灭的灯盏，冰灯成了人们生活中不可缺少的帮手。后来，每逢新春佳节和上元之夜，人们又把它加以装饰，" +
-                "而成为供人观赏的独特的艺术表现形式。清代《黑龙江外纪》里对此有过详细的记载：“上元，城中张灯五夜，" +
-                "村落妇女来观剧者，车声彻夜不绝。有镂五六尺冰为寿星灯者，中燃双炬，望之如水晶人。”";
-        final String title2 = "中国的汉字";
-        final String data2 = "在世界的文字之林中，中国的汉字确乎是异乎寻常的。" +
-                "它的创造契机显示出中国人与世不同的文明传统和感知世界的方式。" +
-                "但它是强有力的、自成系统的，它用一个个方块字培育了五千年古老的文化，" +
-                "维系了一个统一的大国的存在，不管这块东方的土地上有多少种不同的语言，" +
-                "讲着多少互相听不懂的方言，但这汉字的魅力却成了交响乐队的总指挥！面对着科学的飞跃，" +
-                "人们在慨叹中国技术的落后，想在困惑中寻求摆脱这种象形文字带来的同世界的阻隔，" +
-                "因而发出了实行汉字拼音化的震撼灵魂的呐喊。是的，这种呼唤曾经搅动得热血沸腾，" +
-                "但却有点唐吉诃德攻打风车的憨态。中国的汉字以其瑰丽雄健的生命力证明了自己的存在价值。" +
-                "是电脑接受了汉字，而不是电脑改变了汉字。";
-        final String title3 = "听雨";
-        final String data3 = "那一刻，我的心情随着雨声沸腾着，一些旧时光里的人或者事，就像雨珠一样飘飞，穿过时光，" +
-                "越过天涯，轻轻地落在心上，溅起一层层涟漪。而在这涟漪的波光里，仿佛一切都生动起来，鲜活起来。若雨，" +
-                "丝丝缠绵，滴滴惊心。真是应了宋代词人蒋捷那句词：“悲欢离合总无情，一任阶前点滴到天明" +
-                "雨是最能渲染情绪的，不同的人听雨，就能听出不一样的感觉。不同的心境，感受也就各异。" +
-                "心情好的人，听出了欢喜，细品出了轻快；忧伤的人，听出了忧愁，浅尝出了失落，寂寞。" +
-                "而纵观古今，很多文人墨客都喜欢借雨抒发情怀，吟唱心灵之歌。";
-        noteCRUD.addNote(title1,data1,new TimeUtil(new Date()).getTimeString());
-        noteCRUD.addNote(title2,data2,new TimeUtil(new Date()).getTimeString());
-        noteCRUD.addNote(title3,data3,new TimeUtil(new Date()).getTimeString());
-    }
-
-    private void initToDo(ToDoCRUD toDoCRUD){
-        final String title = "待办事项";
-        toDoCRUD.addTodo(title,new TimeUtil(new Date()).getTimeString(),-1);
-    }
-
     /**
      * 登录的方法
      * @param username
@@ -175,21 +139,8 @@ public class SignInFragment extends Fragment {
             @Override
             public void run() {
                 Log.d(TAG, "获取输入的用户名和密码："+username+"+"+password);
-                //创建客户端
-                OkHttpClient client = new OkHttpClient();
-                //根据用户输入的用户名和密码创建User对象并转换为json
-                String jsonStr = new Gson().toJson(new User(username,password));
-                //设置传输数据类型
-                MediaType mediaType = MediaType.parse("application/json");
-                //设置请求体
-                RequestBody requestBody = RequestBody.create(mediaType,jsonStr);
-                Request request = new Request.Builder()
-                        .url("http://8.129.51.177:8080/QuickNoteServlet/login")
-                        .post(requestBody)
-                        .build();
                 //执行异步请求
-                client.newCall(request).enqueue(new Callback() {
-
+                new NetWorkUtil(getActivity().getApplicationContext()).login(username,password).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.d(TAG, "onFailure: "+e.toString());
@@ -224,6 +175,7 @@ public class SignInFragment extends Fragment {
                                         editor.putString("todo_tableName","todo_"+username);
                                         editor.apply();
                                         Intent intent = new Intent(requireActivity(), MainActivity.class);
+                                        intent.putExtra("login",1);
                                         startActivity(intent);
                                         requireActivity().finish();
                                     }

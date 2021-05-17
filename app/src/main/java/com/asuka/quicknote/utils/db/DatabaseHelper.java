@@ -34,7 +34,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "id integer primary key autoincrement," +
                 "title text," +
                 "data text," +
-                "time text)";
+                "image text," +
+                "time text," +
+                "state integer," +
+                "modify integer)";
         sqLiteDatabase.execSQL(CRATE_NOTE);
         String CRATE_TODO = "create table "+todo_tableName+" (" +
                 "id integer primary key autoincrement," +

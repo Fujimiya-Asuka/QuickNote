@@ -4,12 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/AAA"
+        android:id="@+id/syncBtn"
         android:icon="@drawable/ic_baseline_refresh_24"
         android:title="测试按钮"
         app:showAsAction="always" />
     <item
-        android:id="@+id/deleteTable"
+        android:id="@+id/deleteBtn_MainTable"
         android:icon="@drawable/ic_baseline_delete_24"
         android:title="删除所有"
         app:showAsAction="always" />

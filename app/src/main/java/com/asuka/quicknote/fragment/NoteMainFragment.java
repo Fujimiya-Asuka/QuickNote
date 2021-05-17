@@ -40,9 +40,11 @@ public class NoteMainFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private final String TAG = "FragmentA: ";
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private final String TAG = "FragmentA: ";
 
     private FragmentActivity fragmentActivity;
     private RecyclerView recyclerView;
@@ -51,6 +53,7 @@ public class NoteMainFragment extends Fragment {
     private LocalBroadcastManager localBroadcastManager;
     private DeleteThisNoteReceiver deleteThisNoteReceiver;
     private List<Note> allNotes;
+    private View syncBtn;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -87,7 +90,6 @@ public class NoteMainFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-
     }
 
     @Override
@@ -95,6 +97,7 @@ public class NoteMainFragment extends Fragment {
         // Inflate the layout for this fragment
         Log.d(TAG,TAG+"onCreateView");
         return inflater.inflate(R.layout.fragment_note_main_, container, false);
+
     }
 
     @Override
@@ -107,6 +110,8 @@ public class NoteMainFragment extends Fragment {
         recyclerView = fragmentActivity.findViewById(R.id.noteRecycleView_main);
         noteRecyclerViewAdapter = new NoteRecyclerViewAdapter();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(fragmentActivity);
+
+
 
         //瀑布流预留
 //      RecyclerView.LayoutManager layoutManager = new GridLayoutManager(fragmentActivity,2);
@@ -129,7 +134,7 @@ public class NoteMainFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG,TAG+"onResume");
+        Log.d(TAG,TAG+"onResume"+fragmentActivity);
 
         MainActivity mainActivity = (MainActivity) requireActivity();
         mainActivity.setFragmentId(0);//记录当前Fragment返回给Activity
@@ -158,6 +163,7 @@ public class NoteMainFragment extends Fragment {
             }
         });
 
+
     }
 
     @Override
@@ -165,13 +171,7 @@ public class NoteMainFragment extends Fragment {
         super.onDestroy();
         localBroadcastManager.unregisterReceiver(deleteThisNoteReceiver);
     }
-//
-//    @Override
-//    public void onSaveInstanceState(@NonNull Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        outState.putSerializable("note", (Serializable) allNotes);
-//    }
-//
+
 
     //广播接收器，用来接收删除笔记的广播，刷新RecycleView
     class DeleteThisNoteReceiver extends BroadcastReceiver {

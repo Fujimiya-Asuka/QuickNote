@@ -19,9 +19,16 @@ import com.asuka.quicknote.R;
 import com.asuka.quicknote.domain.ToDo;
 import com.asuka.quicknote.utils.db.ToDoCRUD;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class NotifyService extends Service {
     private final String TAG ="NotifyService";
@@ -46,7 +53,7 @@ public class NotifyService extends Service {
             public void run() {
                 //使用前台服务
                 useForegroundService();
-                //所有未提醒的待办设置提醒
+                //初始化所有未提醒的待办设置提醒
                 initAllNotifyToDo();
             }
         }).start();
@@ -109,6 +116,27 @@ public class NotifyService extends Service {
         notificationManager.notify(todoId,notification.build());
         //设置对应待办状态为已完成
         new ToDoCRUD(mContext).setToDoNotify(todoId,0);
+
+        new NetWorkUtil(getApplicationContext()).uploadTodo(new ToDoCRUD(getApplicationContext()).getTodo(todoId)).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                int resultCode = Integer.parseInt(response.header("resultCode"));
+                int todoID = Integer.parseInt(response.header("todoID"));
+                int modify = Integer.parseInt(response.header("modify"));
+                Log.d(TAG, "resultCode："+resultCode);
+                Log.d(TAG, "todoID："+todoID);
+                Log.d(TAG, "modify："+modify);
+                if (resultCode==1){
+                    new ToDoCRUD(getApplicationContext()).updateToDoStateModify(todoID,2,modify);
+                }
+            }
+        });
+
     }
 
     /**
